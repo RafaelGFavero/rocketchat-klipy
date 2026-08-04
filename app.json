@@ -1,0 +1,30 @@
+{
+    "id": "88c860bf-0794-4052-8625-c7b2f20ff0eb",
+    "version": "0.1.0",
+    "requiredApiVersion": "^1.46.0",
+    "iconFile": "icon.png",
+    "author": {
+        "name": "RF Tecnologia",
+        "homepage": "https://rftecnologia.org",
+        "support": "https://github.com/RafaelGFavero/rocketchat-klipy/issues"
+    },
+    "name": "KLIPY GIFs for Rocket.Chat",
+    "nameSlug": "klipy-gifs",
+    "classFile": "KlipyApp.ts",
+    "description": "Third-party Rocket.Chat integration powered by the KLIPY API. Search and share GIFs with /klipy.",
+    "implements": [],
+    "permissions": [
+        {
+            "name": "networking",
+            "domains": [
+                "api.klipy.com"
+            ]
+        },
+        {
+            "name": "slashcommand"
+        },
+        {
+            "name": "message.write"
+        }
+    ]
+}

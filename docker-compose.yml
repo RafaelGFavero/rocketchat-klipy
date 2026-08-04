@@ -1,0 +1,64 @@
+# Rocket.Chat descartável para testar o App localmente.
+#
+# Alternativa ao workspace no Rocket.Chat Cloud. Use quando você tiver Docker
+# disponível e preferir não criar conta na nuvem — ou quando a infraestrutura
+# quiser reproduzir o teste no ambiente dela.
+#
+#   docker compose up -d
+#   # abra http://localhost:3000 e crie o usuário admin
+#   npm run package
+#   # Administração -> Apps -> Upload App -> dist/klipy-gifs_0.1.0.zip
+#
+# Para derrubar e apagar tudo:
+#   docker compose down -v
+#
+# Atenção: a partir do Rocket.Chat 7.0, subir App privado exige plano premium.
+# Registre o workspace em um plano Starter (gratuito e permanente) pela própria
+# tela de administração, ou fixe a imagem em uma versão 6.x para testar sem isso.
+
+services:
+    mongodb:
+        image: mongo:6.0
+        restart: unless-stopped
+        command: >
+            mongod
+            --replSet rs0
+            --oplogSize 128
+            --bind_ip_all
+        volumes:
+            - mongo-data:/data/db
+        healthcheck:
+            test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+
+    # O Rocket.Chat exige o MongoDB em replica set. Este serviço roda uma vez,
+    # inicia o replica set e encerra.
+    mongo-init:
+        image: mongo:6.0
+        depends_on:
+            mongodb:
+                condition: service_healthy
+        restart: 'no'
+        command: >
+            mongosh --host mongodb:27017 --eval
+            'try { rs.status() } catch (e) { rs.initiate({ _id: "rs0", members: [{ _id: 0, host: "mongodb:27017" }] }) }'
+
+    rocketchat:
+        # Fixe a versão que você quer validar. Trocar a tag aqui é a forma mais
+        # rápida de preencher a matriz de compatibilidade do README.
+        image: rocketchat/rocket.chat:7.10.0
+        restart: unless-stopped
+        depends_on:
+            - mongo-init
+        environment:
+            MONGO_URL: mongodb://mongodb:27017/rocketchat?replicaSet=rs0
+            MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0
+            ROOT_URL: http://localhost:3000
+            PORT: '3000'
+        ports:
+            - '3000:3000'
+
+volumes:
+    mongo-data:

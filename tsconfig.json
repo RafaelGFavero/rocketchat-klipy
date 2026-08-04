@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "lib": ["es2017", "dom"],
+        "declaration": false,
+        "sourceMap": false,
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": false,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        // resolveJsonModule fica DESLIGADO de propósito: o compilador do rc-apps
+        // não resolve imports de .json e varre todo o projeto, então um import
+        // desses em qualquer arquivo quebraria o empacotamento. Ver tests/loadFixture.ts.
+        "resolveJsonModule": false,
+        "types": ["node"]
+    },
+    "include": ["**/*.ts"],
+    "exclude": ["node_modules", "dist", "tests"]
+}

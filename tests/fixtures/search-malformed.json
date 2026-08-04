@@ -1,0 +1,10 @@
+{
+    "_comment": "Resposta 200 que nao respeita o contrato: 'results' veio como objeto em vez de array. Deve virar KlipyErrorKind.MALFORMED.",
+    "results": {
+        "0": {
+            "id": "2525964843568523",
+            "title": "Shaq's Excited Dance"
+        }
+    },
+    "next": ""
+}

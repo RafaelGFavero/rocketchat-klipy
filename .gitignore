@@ -1,0 +1,21 @@
+node_modules/
+dist/
+coverage/
+*.log
+*.zip
+
+# Cópia temporária usada por scripts/package.js. Normalmente é removida ao final;
+# fica no disco apenas se o empacotamento falhar no meio.
+.package-build/
+
+# Nunca versionar credenciais. A API Key do KLIPY vive apenas no setting
+# privado do App dentro do workspace — jamais em arquivo do repositório.
+.env
+.env.*
+!.env.example
+
+# .rcappsconfig É versionado: contém apenas a lista de arquivos ignorados no
+# empacotamento. Credenciais de deploy nunca entram nele — use as flags do
+# rc-apps (-u/-p/-t/-i) ou variáveis de ambiente. Se precisar de um arquivo
+# local com credenciais, use o nome abaixo, que não é versionado.
+.rcappsconfig.local

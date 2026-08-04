@@ -1,0 +1,32 @@
+{
+    "_comment": "Resposta de GET /v2/posts?ids=... usada na re-consulta durante a selecao. Mesmo envelope de /v2/search.",
+    "results": [
+        {
+            "id": "2525964843568523",
+            "title": "Shaq's Excited Dance",
+            "media_formats": {
+                "gif": {
+                    "url": "https://static.klipy.com/ii/4e7bea9f7a3371424e6c16ebc93252fe/80/7c/faEUNiNuq5TjUsuXzv.gif",
+                    "duration": 0,
+                    "preview": "",
+                    "dims": [498, 281],
+                    "size": 1392219
+                },
+                "tinygif": {
+                    "url": "https://static.klipy.com/ii/4e7bea9f7a3371424e6c16ebc93252fe/80/7c/NIKSFkmQ.gif",
+                    "duration": 0,
+                    "preview": "",
+                    "dims": [220, 124],
+                    "size": 149153
+                }
+            },
+            "created": 1765483200,
+            "content_description": "",
+            "itemurl": "https://klipy.com/gifs/excited-im-so-excited-22",
+            "tags": ["excited"],
+            "flags": [],
+            "hasaudio": false
+        }
+    ],
+    "next": ""
+}

@@ -1,0 +1,28 @@
+{
+    "url": "http://localhost:3000",
+    "ignoredFiles": [
+        "**/README.md",
+        "**/CHANGELOG.md",
+        "**/PRIVACY.md",
+        "**/SECURITY.md",
+        "**/package-lock.json",
+        "**/package.json",
+        "**/tslint.json",
+        "**/tsconfig.json",
+        "**/tsconfig.test.json",
+        "**/eslint.config.mjs",
+        "**/jest.config.js",
+        "**/*.js",
+        "**/*.js.map",
+        "**/*.d.ts",
+        "**/*.spec.ts",
+        "**/*.test.ts",
+        "**/tests/**",
+        "**/docs/**",
+        "**/scripts/**",
+        "**/dist/**",
+        "**/coverage/**",
+        "**/node_modules/**",
+        "**/.*"
+    ]
+}

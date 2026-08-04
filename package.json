@@ -1,0 +1,35 @@
+{
+    "name": "klipy-gifs",
+    "version": "0.1.0",
+    "description": "Third-party Rocket.Chat App that searches and shares GIFs from the KLIPY API.",
+    "private": true,
+    "license": "MIT",
+    "author": "RF Tecnologia",
+    "type": "commonjs",
+    "scripts": {
+        "i18n:build": "node scripts/build-i18n.js",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "test": "jest",
+        "test:coverage": "jest --coverage",
+        "build": "tsc --noEmit",
+        "verify:api": "node scripts/verify-api-contract.js",
+        "package": "node scripts/package.js",
+        "package:source": "node scripts/package.js --no-compile",
+        "deploy": "rc-apps deploy",
+        "verify": "npm run i18n:build && npm run build && npm run lint && npm test"
+    },
+    "devDependencies": {
+        "@rocket.chat/apps-cli": "^1.14.0",
+        "@rocket.chat/apps-engine": "^1.46.0",
+        "@rocket.chat/ui-kit": "^0.36.1",
+        "@types/jest": "^30.0.0",
+        "@types/node": "^26.1.2",
+        "@typescript-eslint/eslint-plugin": "^8.66.0",
+        "@typescript-eslint/parser": "^8.66.0",
+        "eslint": "^10.8.0",
+        "jest": "^30.4.2",
+        "ts-jest": "^29.4.12",
+        "typescript": "~5.9.0"
+    }
+}

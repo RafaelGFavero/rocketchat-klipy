@@ -1,0 +1,99 @@
+{
+    "_comment": "Resposta de GET /v2/search derivada do exemplo publicado em docs.klipy.com. Nenhuma API Key presente. O terceiro item nao tem title, para exercitar o fallback para content_description.",
+    "results": [
+        {
+            "id": "2525964843568523",
+            "title": "Shaq's Excited Dance",
+            "media_formats": {
+                "gif": {
+                    "url": "https://static.klipy.com/ii/4e7bea9f7a3371424e6c16ebc93252fe/80/7c/faEUNiNuq5TjUsuXzv.gif",
+                    "duration": 0,
+                    "preview": "",
+                    "dims": [498, 281],
+                    "size": 1392219
+                },
+                "mediumgif": {
+                    "url": "https://static.klipy.com/ii/4e7bea9f7a3371424e6c16ebc93252fe/80/7c/cHWztoGaJbg4.gif",
+                    "duration": 0,
+                    "preview": "",
+                    "dims": [498, 281],
+                    "size": 873745
+                },
+                "tinygif": {
+                    "url": "https://static.klipy.com/ii/4e7bea9f7a3371424e6c16ebc93252fe/80/7c/NIKSFkmQ.gif",
+                    "duration": 0,
+                    "preview": "",
+                    "dims": [220, 124],
+                    "size": 149153
+                },
+                "nanogif": {
+                    "url": "https://static.klipy.com/ii/4e7bea9f7a3371424e6c16ebc93252fe/80/7c/rxFdVqew.gif",
+                    "duration": 0,
+                    "preview": "",
+                    "dims": [90, 51],
+                    "size": 41220
+                }
+            },
+            "created": 1765483200,
+            "content_description": "",
+            "itemurl": "https://klipy.com/gifs/excited-im-so-excited-22",
+            "url": "https://static.klipy.com/ii/4e7bea9f7a3371424e6c16ebc93252fe/80/7c/faEUNiNuq5TjUsuXzv.gif",
+            "tags": ["excited", "happy dance"],
+            "flags": [],
+            "hasaudio": false,
+            "content_description_source": ""
+        },
+        {
+            "id": "4551195970372378",
+            "title": "Greetings: Man Waving Hello",
+            "media_formats": {
+                "gif": {
+                    "url": "https://static.klipy.com/ii/d7aec6f6f171607374b2065c836f92f4/ec/f3/p30ORxL1.gif",
+                    "duration": 0,
+                    "preview": "",
+                    "dims": [498, 498],
+                    "size": 2614179
+                },
+                "tinygif": {
+                    "url": "https://static.klipy.com/ii/d7aec6f6f171607374b2065c836f92f4/ec/f3/NIKSFkmQ.gif",
+                    "duration": 0,
+                    "preview": "",
+                    "dims": [220, 220],
+                    "size": 149153
+                }
+            },
+            "created": 1765483200,
+            "content_description": "",
+            "itemurl": "https://klipy.com/gifs/hello-hi-662",
+            "tags": ["hello"],
+            "flags": [],
+            "hasaudio": false
+        },
+        {
+            "id": "8041071659142944",
+            "media_formats": {
+                "mediumgif": {
+                    "url": "https://static.klipy.com/ii/935d7ab9d8c6202580a668421940ec81/14/af/8GCrVAB7.gif",
+                    "duration": 0,
+                    "preview": "",
+                    "dims": [498, 498],
+                    "size": 3721260
+                },
+                "nanogif": {
+                    "url": "https://static.klipy.com/ii/935d7ab9d8c6202580a668421940ec81/14/af/A4bPjSsj.gif",
+                    "duration": 0,
+                    "preview": "",
+                    "dims": [90, 90],
+                    "size": 71468
+                }
+            },
+            "created": 1765483200,
+            "content_description": "Party popper confetti",
+            "itemurl": "https://klipy.com/gifs/party-popper-11",
+            "tags": ["party"],
+            "flags": [],
+            "hasaudio": false
+        }
+    ],
+    "next": "3"
+}
