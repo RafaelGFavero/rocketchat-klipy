@@ -18,8 +18,8 @@ Não abra a submissão antes de fechar todos estes.
 | 0.4 | Produzir as cinco screenshots | ✅ Feito — `docs/screenshots/`, 1200×600, chave mascarada |
 | 0.5 | Acesso de produção da chave KLIPY | ➖ Não se aplica — **cada workspace usa a própria chave** e solicita produção por conta. A nossa serve só para desenvolvimento e testes |
 | 0.6 | Confirmar com o KLIPY a cláusula de requisições originadas no cliente (§4 abaixo) | 🟡 Declarado no cadastro em 04/08/2026 — aguardando retorno |
-| 0.7 | Definir a URL de suporte definitiva | 🔴 Pendente |
-| 0.8 | Criar conta no Publisher Portal | 🔴 Pendente |
+| 0.7 | URLs públicas (suporte, termos, privacidade) | ✅ Feito — repositório público, as três respondem HTTP 200 |
+| 0.8 | Criar conta no **Publisher Portal** | 🔴 Pendente — é conta separada da Rocket.Chat Cloud; formulário mapeado em §1 |
 | 0.9 | Obter API Key do KLIPY | ✅ Feito — plataforma `Rocket.Chat GIF Integration`, chave `RocketChat-Server` |
 | 0.10 | `npm run verify` verde | ✅ Feito |
 | 0.11 | `npm run package` e `npm run package:source` gerando ZIP | ✅ Feito |
@@ -87,9 +87,10 @@ conteúdo duplicado — os arquivos já existem e são versionados junto com o c
 | Privacidade | `https://github.com/RafaelGFavero/rocketchat-klipy/blob/main/PRIVACY.md` |
 | Documentação | `https://github.com/RafaelGFavero/rocketchat-klipy#readme` |
 
-Requisitos: o repositório precisa ser **público** (o portal exige links acessíveis a
-qualquer pessoa) e o branch padrão precisa se chamar `main` — se for `master`, ajuste as
-URLs. O `app.json` já aponta para o endereço de issues.
+**Situação: pronto.** O repositório foi publicado em 04/08/2026 —
+<https://github.com/RafaelGFavero/rocketchat-klipy> — público, branch padrão `main`,
+issues habilitadas. As quatro URLs foram verificadas e respondem **HTTP 200**. O
+`app.json` já aponta para o endereço de issues.
 
 Alternativa, se preferir separar do GitHub: hospedar as mesmas páginas em
 `rftecnologia.org` (ex.: `/klipy/suporte`, `/klipy/termos`, `/klipy/privacidade`). Custa
