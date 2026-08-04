@@ -26,8 +26,47 @@ const staging = path.join(root, '.package-build');
 const distDir = path.join(root, 'dist');
 
 /**
- * `tsconfig.json` que vai **dentro do pacote** — a peça que resolve os erros de
- * compilação do servidor de build do Marketplace.
+ * Versões **exatas** de `typescript` e `@types/node` no pacote.
+ *
+ * Quatro submissões foram reprovadas por erro de compilação até estas duas linhas
+ * ficarem certas. O compilador do Marketplace é o `TypescriptCompiler` do
+ * `@rocket.chat/apps-compiler`, e ele tem três características que explicam tudo:
+ *
+ * 1. **Usa o TypeScript do próprio pacote** (`appRequire('typescript')`). A versão que
+ *    declaramos aqui é a que compila o App lá.
+ * 2. **Força `types: ["node"]`** e ignora qualquer `tsconfig.json` do App — por isso
+ *    `@types/node` é obrigatório. Removê-lo derrubou a 4ª submissão: sem ele, o
+ *    ambiente caiu num `@types/node` antiquíssimo (`ts3.2/globals.d.ts`) e o conflito
+ *    de `Buffer` voltou.
+ * 3. **Nunca resolve imports dentro de `@types/node`** — está escrito no resolver:
+ *
+ *        if (/node_modules\/@types\/node\/\S+\.d\.ts$/.test(containingFile)) {
+ *            return resolvedModules.push(undefined);
+ *        }
+ *
+ *    Ou seja, `Cannot find module 'undici-types'` era inevitável com qualquer
+ *    `@types/node` ≥ 18.18, que é quando essa dependência foi introduzida. Não havia
+ *    como declarar `undici-types` e resolver — o compilador recusa por construção.
+ *
+ * `18.11.19` é a última versão sem `undici-types`, e `4.9.5` é a mesma versão de
+ * TypeScript que o CLI oficial embute — a combinação mais conservadora possível.
+ * Ambas validadas rodando o compilador real deles contra o pacote.
+ *
+ * Faixas (`^`, `~`) seriam um risco: o npm resolveria versões diferentes das testadas.
+ */
+const COMPILER_PINS = {
+    typescript: '4.9.5',
+    typesNode: '18.11.19',
+};
+
+/**
+ * `tsconfig.json` que vai **dentro do pacote**.
+ *
+ * O `TypescriptCompiler` — que é o que o Marketplace usa hoje — **ignora** este arquivo
+ * e compila com opções fixas. Ele vai junto mesmo assim porque o `TscBasedCompiler`
+ * (o modo `--experimental-native-compiler`) *lê* o tsconfig do App e deixa as opções
+ * dele vencerem as padrão. Se o Marketplace migrar para esse compilador, o pacote já
+ * está preparado; enquanto isso, o arquivo é inofensivo.
  *
  * Três submissões foram reprovadas antes de eu achar isto. O compilador que eles usam
  * (`@rocket.chat/apps-compiler`, classe `TscBasedCompiler`) faz:
@@ -112,11 +151,9 @@ function buildManifest(source) {
             '@rocket.chat/apps-engine': source.devDependencies['@rocket.chat/apps-engine'],
             // Os .d.ts do apps-engine importam ui-kit; sem ele o compilador não resolve.
             '@rocket.chat/ui-kit': source.devDependencies['@rocket.chat/ui-kit'],
-            // O compilador do rc-apps usa o TypeScript do próprio projeto.
-            typescript: source.devDependencies.typescript,
-            // @types/node NÃO entra: o tsconfig do pacote usa types: [], então nenhum
-            // pacote de tipos é carregado. Declará-lo só traria de volta os erros que
-            // reprovaram as três primeiras submissões. Ver PACKAGE_TSCONFIG.
+            // Versões EXATAS, não faixas — ver COMPILER_PINS.
+            typescript: COMPILER_PINS.typescript,
+            '@types/node': COMPILER_PINS.typesNode,
         },
     };
 }

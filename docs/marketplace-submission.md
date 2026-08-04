@@ -194,7 +194,62 @@ ts-jest e o próprio CLI — e tropeçava em `undici-types`, dependência transi
 | `typescript` | O compilador do rc-apps usa o TS do projeto |
 | `@types/node` | **Fixado em `18.11.19`** — ver abaixo |
 
-### ⚠️ O `tsconfig.json` dentro do pacote é obrigatório
+### ⚠️ As versões de `typescript` e `@types/node` são o que decide o build
+
+**Quatro submissões reprovadas** até estas duas linhas ficarem certas. O compilador do
+Marketplace é o `TypescriptCompiler` do `@rocket.chat/apps-compiler`, e três
+características dele explicam todos os erros:
+
+1. **Usa o TypeScript do próprio pacote** (`appRequire('typescript')`). A versão
+   declarada no manifesto é a que compila o App lá.
+2. **Força `types: ["node"]`** e ignora o `tsconfig.json` do App. Por isso
+   `@types/node` é **obrigatório** — o `apps-engine` tem `/// <reference types="node" />`
+   em 17 `.d.ts`.
+3. **Nunca resolve imports dentro de `@types/node`.** Está escrito no resolver:
+
+   ```js
+   if (/node_modules\/@types\/node\/\S+\.d\.ts$/.test(containingFile)) {
+       return resolvedModules.push(undefined);
+   }
+   ```
+
+O item 3 é a chave: `Cannot find module 'undici-types'` era **inevitável** com qualquer
+`@types/node` ≥ 18.18, quando essa dependência foi introduzida. Não adiantava declará-la —
+o compilador recusa resolver por construção.
+
+| Tentativa | Configuração | Erro |
+|---|---|---|
+| 1ª | manifesto completo (11 devDeps) | `Cannot find module 'undici-types'` |
+| 2ª | manifesto enxuto + `undici-types` declarado | idêntico — o resolver recusa |
+| 3ª | `@types/node` 18.11.19 + `typescript` em faixa `~5.9.0` | `Buffer incorrectly extends Uint8Array<ArrayBufferLike>` |
+| 4ª | **sem** `@types/node` | `Buffer cannot simultaneously extend…` em `ts3.2/globals.d.ts` — o ambiente caiu num @types/node antiquíssimo |
+| 5ª | `typescript: 4.9.5` + `@types/node: 18.11.19`, **exatas** | ✅ sem diagnostics |
+
+`18.11.19` é a última versão de `@types/node` sem `undici-types`; `4.9.5` é a mesma versão
+de TypeScript que o CLI oficial embute. **Versões exatas, nunca faixas** — com `~` ou `^`
+o npm resolve algo diferente do que foi testado, que foi o que derrubou a 3ª tentativa.
+
+### Como validar de verdade antes de reenviar
+
+Simulações reimplementando as opções de compilação **dão falso positivo** — duas das
+minhas deram. O único teste que vale é rodar o compilador deles:
+
+```js
+const { TypescriptCompiler } = require('@rocket.chat/apps-compiler/compiler/TypescriptCompiler.js');
+const { AppsEngineValidator } = require('@rocket.chat/apps-compiler/compiler/AppsEngineValidator.js');
+const { getAppSource } = require('@rocket.chat/apps-compiler/compiler/getAppSource.js');
+
+const appRequire = createRequire(path.join(pacoteExtraido, 'app.json'));
+const compiler = new TypescriptCompiler(pacoteExtraido, appRequire('typescript'),
+                                        new AppsEngineValidator(appRequire));
+const result = compiler.transpileSource(await getAppSource(pacoteExtraido));
+// result.diagnostics vazio = o build passa
+```
+
+Extraia o ZIP, rode `npm install` e execute isso. É exatamente o que produz os
+diagnostics do portal.
+
+### Nota: o `tsconfig.json` dentro do pacote
 
 Esta é a lição mais cara deste projeto: **três submissões foram reprovadas** por erros de
 compilação antes de a causa aparecer.
