@@ -25,16 +25,22 @@ const root = path.join(__dirname, '..');
 const staging = path.join(root, '.package-build');
 const distDir = path.join(root, 'dist');
 
-/** Faixa lida de node_modules/@types/node, para não divergir do que compila aqui. */
-const UNDICI_TYPES_RANGE = (() => {
-    try {
-        const typesNode = require(path.join(root, 'node_modules', '@types', 'node', 'package.json'));
-
-        return typesNode.dependencies['undici-types'];
-    } catch {
-        return '*';
-    }
-})();
+/**
+ * Versão de `@types/node` fixada no pacote — a última que **não** depende de
+ * `undici-types`.
+ *
+ * O servidor de build do Marketplace reprovou duas submissões com
+ * `Cannot find module 'undici-types'`. Declarar `undici-types` explicitamente não
+ * resolveu: o ambiente deles não instala as devDependencies do jeito que o npm local
+ * instala. E remover `@types/node` também não resolveria, porque
+ * `@rocket.chat/ui-kit` o traz transitivamente (typia → inquirer →
+ * @inquirer/external-editor), sempre na versão mais recente.
+ *
+ * A saída é fixar uma versão que não tenha essa dependência: `undici-types` entrou no
+ * `@types/node` a partir da 18.18. Como o App não usa nenhuma API de Node — só
+ * `URL`, `Date`, `Set` e `JSON` —, tipos dessa idade são mais que suficientes.
+ */
+const TYPES_NODE_VERSION = '18.11.19';
 
 /** Tudo que compõe o App. Nada de testes, docs, scripts ou config de ferramenta. */
 // package-lock.json fica de fora de propósito: o empacotador compilado não o ignora
@@ -72,10 +78,9 @@ function buildManifest(source) {
             '@rocket.chat/ui-kit': source.devDependencies['@rocket.chat/ui-kit'],
             // O compilador do rc-apps usa o TypeScript do próprio projeto.
             typescript: source.devDependencies.typescript,
-            // Ele também compila com types: ["node"] fixo.
-            '@types/node': source.devDependencies['@types/node'],
-            // Dependência de @types/node, declarada de forma explícita.
-            'undici-types': UNDICI_TYPES_RANGE,
+            // Ele também compila com types: ["node"] fixo. Versão fixada — ver
+            // TYPES_NODE_VERSION.
+            '@types/node': TYPES_NODE_VERSION,
         },
     };
 }

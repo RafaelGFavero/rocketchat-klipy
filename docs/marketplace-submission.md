@@ -192,14 +192,36 @@ ts-jest e o próprio CLI — e tropeçava em `undici-types`, dependência transi
 | `@rocket.chat/apps-engine` | Exigido pelo CLI e pelo servidor de build |
 | `@rocket.chat/ui-kit` | Os `.d.ts` do engine o importam |
 | `typescript` | O compilador do rc-apps usa o TS do projeto |
-| `@types/node` | O compilador roda com `types: ["node"]` fixo |
-| `undici-types` | Dependência de `@types/node`, **declarada explicitamente** |
+| `@types/node` | **Fixado em `18.11.19`** — ver abaixo |
 
-### Validar antes de reenviar
+### Por que `@types/node` é fixado numa versão antiga
 
-Vale simular o build em vez de descobrir na revisão: extraia o ZIP num diretório limpo,
-rode `npm install` e compile com as opções do rc-apps (`target es2017`, `module commonjs`,
-`types: ["node"]`, `skipLibCheck`). Se compilar ali, compila lá.
+Enxugar o manifesto não bastou: a segunda submissão voltou com os **mesmos cinco erros**.
+Duas descobertas explicam o porquê:
+
+1. **Declarar `undici-types` explicitamente não resolve.** O ambiente de build do
+   Marketplace não instala as devDependencies como o `npm install` local instala — o
+   pacote declarado simplesmente não aparece em `node_modules`.
+2. **Remover `@types/node` também não resolveria.** O `@rocket.chat/ui-kit` o traz
+   transitivamente (`typia → inquirer → @inquirer/external-editor`), sempre na versão
+   mais recente, que exige `undici-types`.
+
+A saída é escolher uma versão que **não tenha essa dependência**. `undici-types` entrou
+no `@types/node` a partir da 18.18; a 18.11.19 é a última linha sem ele. Como o App não
+usa nenhuma API de Node — apenas `URL`, `Date`, `Set` e `JSON` —, tipos dessa idade
+bastam.
+
+### Validar antes de reenviar — reproduzindo a falha
+
+Simular o build ingenuamente **não pega este erro**: o `npm install` local resolve
+`undici-types` e tudo compila. É preciso reproduzir a condição de falha:
+
+1. extraia o ZIP num diretório limpo e rode `npm install`;
+2. **apague qualquer `undici-types` de `node_modules`**;
+3. compile com as opções do rc-apps (`target es2017`, `module commonjs`,
+   `types: ["node"]`, `skipLibCheck`).
+
+Se compilar sem `undici-types` presente, o erro não pode ocorrer lá.
 
 Alternativa pelo CLI, que envia direto ao portal:
 

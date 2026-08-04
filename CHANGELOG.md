@@ -14,12 +14,18 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   build instalava tudo e falhava ao resolver `undici-types`, dependência transitiva de
   `@types/node`.
 
-  Agora `scripts/package.js` **gera** um manifesto enxuto com as 5 dependências que o
-  App realmente precisa, e declara `undici-types` explicitamente em vez de confiar na
-  resolução transitiva. O `npm install` do pacote caiu de centenas de pacotes para 66.
+  `scripts/package.js` passou a **gerar** um manifesto enxuto, com as dependências que o
+  App realmente precisa. O `npm install` do pacote caiu de centenas de pacotes para 65.
 
-  Validado por simulação do build (extrair o ZIP, instalar só o declarado, compilar com
-  as opções do rc-apps) antes de reenviar.
+  Só isso não bastou — a segunda tentativa falhou igual. Declarar `undici-types`
+  explicitamente não resolve, porque o ambiente de build deles não instala as
+  devDependencies como o npm local; e remover `@types/node` também não resolveria,
+  porque `@rocket.chat/ui-kit` o traz transitivamente. A correção foi **fixar
+  `@types/node` em `18.11.19`**, a última versão que não depende de `undici-types`. O App
+  não usa nenhuma API de Node, então tipos dessa idade bastam.
+
+  Validado reproduzindo a condição de falha: instalar, **apagar `undici-types`** e
+  compilar assim mesmo. Compila.
 
 - **Mensagens do App saíam em inglês num Rocket.Chat em português.** O idioma era
   resolvido só por `user.settings.preferences.language`, que fica vazio para quem nunca
