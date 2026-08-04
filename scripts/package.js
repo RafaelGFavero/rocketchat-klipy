@@ -25,11 +25,60 @@ const root = path.join(__dirname, '..');
 const staging = path.join(root, '.package-build');
 const distDir = path.join(root, 'dist');
 
+/** Faixa lida de node_modules/@types/node, para não divergir do que compila aqui. */
+const UNDICI_TYPES_RANGE = (() => {
+    try {
+        const typesNode = require(path.join(root, 'node_modules', '@types', 'node', 'package.json'));
+
+        return typesNode.dependencies['undici-types'];
+    } catch {
+        return '*';
+    }
+})();
+
 /** Tudo que compõe o App. Nada de testes, docs, scripts ou config de ferramenta. */
 // package-lock.json fica de fora de propósito: o empacotador compilado não o ignora
 // e ele entraria no ZIP com centenas de KB inúteis. O CLI emite um aviso por não
 // encontrá-lo, que é apenas informativo.
-const APP_FILES = ['app.json', 'icon.png', 'KlipyApp.ts', 'package.json', 'LICENSE'];
+//
+// package.json também não é copiado: é **gerado** enxuto mais abaixo. Ver buildManifest.
+const APP_FILES = ['app.json', 'icon.png', 'KlipyApp.ts', 'LICENSE'];
+
+/**
+ * Monta o package.json que vai dentro do pacote.
+ *
+ * Não é o do projeto. O servidor de build do Marketplace instala o que estiver
+ * declarado aqui e compila — então declarar jest, eslint, ts-jest e o próprio CLI
+ * fazia ele baixar centenas de pacotes sem relação com o App, cada um uma chance de
+ * quebrar o build. Foi exatamente o que aconteceu na primeira submissão: `@types/node`
+ * depende de `undici-types`, a resolução transitiva falhou no ambiente deles e a
+ * revisão voltou com cinco erros de compilação.
+ *
+ * Aqui fica só o que é necessário para compilar o App, com `undici-types` declarado
+ * explicitamente em vez de confiar na resolução transitiva.
+ */
+function buildManifest(source) {
+    return {
+        name: source.name,
+        version: source.version,
+        description: source.description,
+        license: source.license,
+        author: source.author,
+        type: 'commonjs',
+        devDependencies: {
+            // Exigido pelo CLI e pelo servidor de build.
+            '@rocket.chat/apps-engine': source.devDependencies['@rocket.chat/apps-engine'],
+            // Os .d.ts do apps-engine importam ui-kit; sem ele o compilador não resolve.
+            '@rocket.chat/ui-kit': source.devDependencies['@rocket.chat/ui-kit'],
+            // O compilador do rc-apps usa o TypeScript do próprio projeto.
+            typescript: source.devDependencies.typescript,
+            // Ele também compila com types: ["node"] fixo.
+            '@types/node': source.devDependencies['@types/node'],
+            // Dependência de @types/node, declarada de forma explícita.
+            'undici-types': UNDICI_TYPES_RANGE,
+        },
+    };
+}
 const APP_DIRS = ['commands', 'services', 'settings', 'types', 'utils', 'i18n'];
 
 function copyDir(from, to) {
@@ -68,6 +117,19 @@ for (const file of APP_FILES) {
 for (const dir of APP_DIRS) {
     copyDir(path.join(root, dir), path.join(staging, dir));
 }
+
+const manifest = buildManifest(require(path.join(root, 'package.json')));
+
+fs.writeFileSync(
+    path.join(staging, 'package.json'),
+    `${JSON.stringify(manifest, null, 4)}\n`,
+    'utf8',
+);
+
+process.stdout.write(
+    `package: manifesto enxuto — ${Object.keys(manifest.devDependencies).length} dependências ` +
+        `(o projeto tem ${Object.keys(require(path.join(root, 'package.json')).devDependencies).length})\n`,
+);
 
 // O compilador resolve `typescript` e `@rocket.chat/apps-engine` a partir do
 // app.json. Uma junction evita duplicar centenas de megabytes.

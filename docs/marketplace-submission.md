@@ -168,7 +168,38 @@ Os dois scripts empacotam a partir de uma cópia limpa. Confira antes de enviar:
 - [ ] o ZIP não contém `node_modules`;
 - [ ] o ZIP não contém testes, docs ou scripts;
 - [ ] o ZIP não contém API Key;
-- [ ] `app.json` traz o UUID, a versão e as três permissões corretas.
+- [ ] `app.json` traz o UUID, a versão e as três permissões corretas;
+- [ ] o `package.json` de dentro do ZIP tem **5 devDependencies**, não as 11 do projeto.
+
+### ⚠️ O package.json do pacote não é o do projeto
+
+A primeira submissão foi reprovada com cinco erros de compilação:
+
+```
+Cannot find module 'undici-types' or its corresponding type declarations.
+  em node_modules/@types/node/http.d.ts, worker_threads.d.ts, web-globals/fetch.d.ts
+```
+
+O servidor de build extrai o ZIP, roda `npm install` com o `package.json` que estiver
+dentro e compila. Como esse arquivo era uma cópia do projeto, ele instalava jest, eslint,
+ts-jest e o próprio CLI — e tropeçava em `undici-types`, dependência transitiva de
+`@types/node`.
+
+`scripts/package.js` agora **gera** o manifesto, com apenas o que compila o App:
+
+| Dependência | Por quê |
+|---|---|
+| `@rocket.chat/apps-engine` | Exigido pelo CLI e pelo servidor de build |
+| `@rocket.chat/ui-kit` | Os `.d.ts` do engine o importam |
+| `typescript` | O compilador do rc-apps usa o TS do projeto |
+| `@types/node` | O compilador roda com `types: ["node"]` fixo |
+| `undici-types` | Dependência de `@types/node`, **declarada explicitamente** |
+
+### Validar antes de reenviar
+
+Vale simular o build em vez de descobrir na revisão: extraia o ZIP num diretório limpo,
+rode `npm install` e compile com as opções do rc-apps (`target es2017`, `module commonjs`,
+`types: ["node"]`, `skipLibCheck`). Se compilar ali, compila lá.
 
 Alternativa pelo CLI, que envia direto ao portal:
 

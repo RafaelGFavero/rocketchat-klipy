@@ -7,6 +7,20 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ### Corrigido
 
+- **O pacote não compilava no servidor de build do Marketplace.** A primeira submissão
+  voltou com cinco erros `Cannot find module 'undici-types'`. Causa: o `package.json` que
+  ia dentro do ZIP era o do projeto inteiro, com as 11 devDependencies — jest, eslint,
+  ts-jest, o próprio CLI —, nada disso necessário para compilar o App. O ambiente de
+  build instalava tudo e falhava ao resolver `undici-types`, dependência transitiva de
+  `@types/node`.
+
+  Agora `scripts/package.js` **gera** um manifesto enxuto com as 5 dependências que o
+  App realmente precisa, e declara `undici-types` explicitamente em vez de confiar na
+  resolução transitiva. O `npm install` do pacote caiu de centenas de pacotes para 66.
+
+  Validado por simulação do build (extrair o ZIP, instalar só o declarado, compilar com
+  as opções do rc-apps) antes de reenviar.
+
 - **Mensagens do App saíam em inglês num Rocket.Chat em português.** O idioma era
   resolvido só por `user.settings.preferences.language`, que fica vazio para quem nunca
   escolheu idioma no perfil — ou seja, a maioria. O cliente exibe a interface traduzida
