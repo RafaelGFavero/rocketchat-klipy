@@ -15,7 +15,7 @@ Não abra a submissão antes de fechar todos estes.
 | 0.1b | [manual-test-plan.md](manual-test-plan.md) completo | ⚪ Opcional para a 0.1.0; recomendado antes de divulgar |
 | 0.2 | Confirmar o contrato da API contra a API real do KLIPY | ✅ Feito em 04/08/2026 — `/v2/search` 100%, um bug em `/v2/posts` corrigido |
 | 0.3 | Preencher a matriz de compatibilidade do README com resultados observados | ✅ Feito — 6.13 testado, 7.10 parcial, ambos documentados |
-| 0.4 | Produzir as cinco screenshots | ✅ Feito — `docs/screenshots/`, 1200×600, chave mascarada |
+| 0.4 | Produzir as cinco screenshots | ✅ Feito — `docs/screenshots/`, **960×540 (16:9)**, chave mascarada |
 | 0.5 | Acesso de produção da chave KLIPY | ➖ Não se aplica — **cada workspace usa a própria chave** e solicita produção por conta. A nossa serve só para desenvolvimento e testes |
 | 0.6 | Confirmar com o KLIPY a cláusula de requisições originadas no cliente (§4 abaixo) | 🟡 Declarado no cadastro em 04/08/2026 — aguardando retorno |
 | 0.7 | URLs públicas (suporte, termos, privacidade) | ✅ Feito — repositório público, as três respondem HTTP 200 |
@@ -241,8 +241,17 @@ Registre aqui a data de envio e a resposta.
 
 ## 5. Screenshots ✅
 
-Cinco imagens em **1200 × 600**, em `docs/screenshots/`, capturadas em 04/08/2026 num
-Rocket.Chat 6.13 real.
+Cinco imagens em **960 × 540 (16:9)**, em `docs/screenshots/`, capturadas em 04/08/2026
+num Rocket.Chat 6.13 real.
+
+> ⚠️ **O formato é 16:9, não 1200 × 600.** A documentação do Rocket.Chat menciona
+> 1200 × 600 (que é 2:1), mas o formulário de submissão exige *"aspect ratio 16:9 or
+> 960x540 pixels"*. Foi preciso reconverter as capturas.
+>
+> Ao reconverter, **encaixe, não recorte**. Cortar as laterais de 2:1 para 16:9 remove
+> 134px de largura e estraga o que estiver nas bordas — na primeira tentativa, isso
+> decepou o rótulo "Português" da imagem 5 e a barra lateral da imagem 3. As faixas de
+> 30px acima e abaixo custam menos que perder conteúdo.
 
 | # | Arquivo | Conteúdo | Verificação |
 |---|---|---|---|

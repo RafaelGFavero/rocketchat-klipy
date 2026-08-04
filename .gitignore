@@ -8,6 +8,10 @@ coverage/
 # fica no disco apenas se o empacotamento falhar no meio.
 .package-build/
 
+# Versões 2:1 das screenshots, antes da conversão para o 16:9 que o Publisher Portal
+# exige. Ficam no disco caso seja preciso reconverter, mas não têm valor versionado.
+docs/screenshots/_2x1-original/
+
 # Nunca versionar credenciais. A API Key do KLIPY vive apenas no setting
 # privado do App dentro do workspace — jamais em arquivo do repositório.
 .env

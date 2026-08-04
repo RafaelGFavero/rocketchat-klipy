@@ -65,8 +65,8 @@ o seu administrador configurou. Ver [PRIVACY.md](PRIVACY.md).
 
 ## Screenshots
 
-Capturadas em 04/08/2026 num Rocket.Chat 6.13 real, em `1200 × 600` — o formato exigido
-pelo Publisher Portal.
+Capturadas em 04/08/2026 num Rocket.Chat 6.13 real, em `960 × 540` (16:9) — o formato
+exigido pelo Publisher Portal.
 
 | # | Arquivo | Conteúdo |
 |---|---|---|
