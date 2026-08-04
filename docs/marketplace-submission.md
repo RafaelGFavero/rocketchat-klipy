@@ -211,16 +211,20 @@ A chave de teste foi emitida após esse cadastro, o que é um indício favoráve
 
 ### Ação restante
 
-Escrever para developers@klipy.com retomando o que foi declarado no cadastro e pedindo
-confirmação explícita. Aproveite o mesmo contato para confirmar:
+**O e-mail está escrito e pronto em [docs/email-klipy.md](email-klipy.md)** — basta
+enviar para `developers@klipy.com`. Ele retoma o que foi declarado no cadastro e faz três
+perguntas objetivas:
 
-- se a atribuição implementada atende às diretrizes (placeholder "Search KLIPY" no
-  campo de busca + "Powered by KLIPY" na mensagem);
-- se há restrição ao uso do nome "KLIPY" no nome do App publicado no Marketplace. Isso
-  ganhou peso: o Partner Panel **recusa** "KLIPY" no nome da chave de API
-  (*"Avoid 'KLIPY', 'test', and similar keywords in the API key name"*). A regra é sobre
-  o nome da chave, não sobre o nome do App — mas mostra que existe política de uso da
-  marca, e vale perguntar antes de publicar como "KLIPY GIFs for Rocket.Chat".
+1. o padrão de chamada server-side atende aos *Integration Requirements*;
+2. a atribuição implementada atende às diretrizes;
+3. há restrição ao uso de "KLIPY" no nome do App publicado.
+
+A terceira ganhou peso depois que o Partner Panel **recusou** "KLIPY" no nome da chave de
+API (*"Avoid 'KLIPY', 'test', and similar keywords in the API key name"*). A regra é sobre
+o nome da chave, não do App — mas revela que existe política de marca, e é melhor
+perguntar antes de publicar do que renomear depois.
+
+Registre aqui a data de envio e a resposta.
 
 ### Cadastro no Partner Panel
 
