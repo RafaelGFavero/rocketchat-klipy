@@ -194,7 +194,41 @@ ts-jest e o próprio CLI — e tropeçava em `undici-types`, dependência transi
 | `typescript` | O compilador do rc-apps usa o TS do projeto |
 | `@types/node` | **Fixado em `18.11.19`** — ver abaixo |
 
-### Por que `@types/node` é fixado numa versão antiga
+### ⚠️ O `tsconfig.json` dentro do pacote é obrigatório
+
+Esta é a lição mais cara deste projeto: **três submissões foram reprovadas** por erros de
+compilação antes de a causa aparecer.
+
+O compilador do Marketplace é o `TscBasedCompiler` do `@rocket.chat/apps-compiler`, e ele
+faz o seguinte:
+
+```js
+const appTsconfigPath = path.join(sourcePath, "tsconfig.json");
+tsconfigJson = { ...defaults, ...parsed,
+                 compilerOptions: { ...defaults, ...parsed.compilerOptions,
+                                    ...NON_CONFIGURABLE } };
+```
+
+Ou seja: **ele lê o `tsconfig.json` do App, e as opções dele vencem as padrão.** Só
+`module`, `moduleResolution` e `outDir` são inegociáveis.
+
+Sem esse arquivo, o compilador usa o default — sem `skipLibCheck` e carregando qualquer
+`@types` instalado — e o build morre num beco sem saída:
+
+| Configuração | Erro |
+|---|---|
+| `@types/node` recente | `Cannot find module 'undici-types'` (o ambiente deles não o instala) |
+| `@types/node` ≤ 18.11 (sem undici-types) | `Buffer incorrectly extends Uint8Array<ArrayBufferLike>` — antigo demais para o TS 5.7+ deles |
+| sem `@types/node` | `Cannot find name 'Buffer'` nos `.d.ts` do apps-engine |
+
+A saída é o pacote levar um `tsconfig.json` com **`types: []`** e **`skipLibCheck: true`**.
+
+**Pegadinha:** o empacotador do CLI tem `'**/tsconfig.json'` na lista de ignorados e
+descarta o arquivo em silêncio. `scripts/package.js` o injeta no ZIP depois da geração e
+verifica que entrou — se não entrar, o empacotamento falha em vez de produzir um pacote
+que seria reprovado.
+
+### Nota histórica: `@types/node` fixado numa versão antiga
 
 Enxugar o manifesto não bastou: a segunda submissão voltou com os **mesmos cinco erros**.
 Duas descobertas explicam o porquê:

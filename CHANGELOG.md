@@ -14,18 +14,34 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   build instalava tudo e falhava ao resolver `undici-types`, dependência transitiva de
   `@types/node`.
 
-  `scripts/package.js` passou a **gerar** um manifesto enxuto, com as dependências que o
-  App realmente precisa. O `npm install` do pacote caiu de centenas de pacotes para 65.
+  Foram **três submissões reprovadas** até a causa aparecer, e cada tentativa revelou uma
+  camada do problema:
 
-  Só isso não bastou — a segunda tentativa falhou igual. Declarar `undici-types`
-  explicitamente não resolve, porque o ambiente de build deles não instala as
-  devDependencies como o npm local; e remover `@types/node` também não resolveria,
-  porque `@rocket.chat/ui-kit` o traz transitivamente. A correção foi **fixar
-  `@types/node` em `18.11.19`**, a última versão que não depende de `undici-types`. O App
-  não usa nenhuma API de Node, então tipos dessa idade bastam.
+  | Tentativa | Configuração | Erro |
+  |---|---|---|
+  | 1ª | manifesto completo do projeto (11 devDeps) | `Cannot find module 'undici-types'` |
+  | 2ª | manifesto enxuto + `undici-types` declarado | idêntico — o ambiente deles não instala o que se declara |
+  | 3ª | `@types/node` fixado em `18.11.19` (sem undici-types) | `Buffer incorrectly extends Uint8Array<ArrayBufferLike>` — tipos velhos demais para o TS 5.7+ deles |
+  | — | sem `@types/node` | `Cannot find name 'Buffer'` nos `.d.ts` do apps-engine |
 
-  Validado reproduzindo a condição de falha: instalar, **apagar `undici-types`** e
-  compilar assim mesmo. Compila.
+  As exigências eram inconciliáveis por esse caminho. **A causa real estava noutro lugar:**
+  o compilador do Marketplace (`TscBasedCompiler`) lê o `tsconfig.json` **do App** e deixa
+  as opções dele vencerem as padrão — só `module`, `moduleResolution` e `outDir` são
+  fixos. E o pacote nunca levava um `tsconfig.json`, então ele caía no default: sem
+  `skipLibCheck` e carregando `@types/node` automaticamente.
+
+  A correção é o pacote levar um `tsconfig.json` com `types: []` (nenhum pacote de tipos
+  é carregado) e `skipLibCheck: true` (erros dentro de `.d.ts` de dependência não
+  reprovam o build). O App não usa nenhuma API de Node — só `URL`, `Date`, `Set` e
+  `JSON` —, então não perde nada.
+
+  Detalhe que quase escondeu a solução: o empacotador do CLI tem `'**/tsconfig.json'` na
+  lista de arquivos ignorados, e descartava o arquivo em silêncio. `scripts/package.js`
+  agora o injeta no ZIP depois da geração, e **verifica** que ele entrou.
+
+  Validado com uma simulação que replica o `TscBasedCompiler` linha a linha — o mesmo
+  merge de opções, o mesmo `tsc` do pacote, e `undici-types` removido à força para
+  reproduzir a condição de falha.
 
 - **Mensagens do App saíam em inglês num Rocket.Chat em português.** O idioma era
   resolvido só por `user.settings.preferences.language`, que fica vazio para quem nunca
