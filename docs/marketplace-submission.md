@@ -19,11 +19,14 @@ Não abra a submissão antes de fechar todos estes.
 | 0.5 | Acesso de produção da chave KLIPY | ➖ Não se aplica — **cada workspace usa a própria chave** e solicita produção por conta. A nossa serve só para desenvolvimento e testes |
 | 0.6 | Confirmar com o KLIPY a cláusula de requisições originadas no cliente (§4 abaixo) | 🟡 Declarado no cadastro em 04/08/2026 — aguardando retorno |
 | 0.7 | URLs públicas (suporte, termos, privacidade) | ✅ Feito — repositório público, as três respondem HTTP 200 |
-| 0.8 | Criar conta no **Publisher Portal** | 🔴 Pendente — é conta separada da Rocket.Chat Cloud; formulário mapeado em §1 |
+| 0.8 | Criar conta no **Publisher Portal** | ✅ Feito em 04/08/2026 — é conta separada da Rocket.Chat Cloud |
 | 0.9 | Obter API Key do KLIPY | ✅ Feito — plataforma `Rocket.Chat GIF Integration`, chave `RocketChat-Server` |
 | 0.10 | `npm run verify` verde | ✅ Feito |
 | 0.11 | `npm run package` e `npm run package:source` gerando ZIP | ✅ Feito |
 | 0.12 | Nenhuma credencial no repositório | ✅ Verificado |
+| 0.13 | Build do Marketplace compilando | ✅ 04/08/2026 — status `Compiled`, TS 5.9.3, Engine 1.46.0, 15,2s (5ª tentativa) |
+| 0.14 | **Short Description** e **Categories** na listagem | 🔴 **em branco no portal** — ver §2.2 |
+| 0.15 | Submeter a versão para revisão (sair de `Draft`) | 🔴 Pendente — último passo |
 
 ---
 
@@ -73,6 +76,24 @@ Verificado no formulário real em 04/08/2026.
 | Autor | RF Tecnologia — <https://rftecnologia.org> |
 | **Suporte** | `https://github.com/RafaelGFavero/rocketchat-klipy/issues` |
 | **Documentação** | `https://github.com/RafaelGFavero/rocketchat-klipy#readme` |
+
+### 2.2 Campos que ficaram em branco no portal 🔴
+
+Depois do build aprovado, a tela do App mostrava:
+
+| Campo | Estado |
+|---|---|
+| Short Description | `-` — **vazio** |
+| Categories | **vazio** |
+| Long Description | preenchido, mas com o texto curto do `app.json`, não o da listagem |
+| Status | `Draft` |
+
+Uma listagem sem descrição curta e sem categoria é praticamente invisível na busca do
+Marketplace — a descrição curta é o que aparece no card de resultado. Preencher antes de
+submeter para revisão.
+
+Use os textos da §6. A Long Description vale substituir pela versão longa: o que está lá
+hoje veio do campo `description` do manifesto, que é uma linha só.
 
 ### 2.1 As URLs públicas — decisão
 
@@ -194,7 +215,33 @@ ts-jest e o próprio CLI — e tropeçava em `undici-types`, dependência transi
 | `typescript` | O compilador do rc-apps usa o TS do projeto |
 | `@types/node` | **Fixado em `18.11.19`** — ver abaixo |
 
-### ⚠️ As versões de `typescript` e `@types/node` são o que decide o build
+### ✅ Build aprovado em 04/08/2026 — o que resolveu
+
+```
+Job: KLIPY GIFs for Rocket.Chat v0.1.0
+TS v5.9.3 | Engine v1.46.0 | Status: Finished | 15.224s
+Version status: Compiled
+```
+
+Foram **cinco submissões**. A combinação que passou:
+
+| Peça | Valor | Papel |
+|---|---|---|
+| **`tsconfig.json` no pacote** | `skipLibCheck: true`, `types: []` | **O que realmente resolveu** |
+| `@types/node` | `18.11.19` (exata) | Evita `undici-types`, que o resolver deles recusa |
+| `typescript` | `4.9.5` (exata) | Cinto de segurança — o job reportou TS 5.9.3, então o pin não foi respeitado |
+
+**A evidência de que o `tsconfig.json` é a peça central:** a 3ª tentativa já tinha
+`@types/node@18.11.19` com TypeScript 5.9 e falhou com
+`Buffer incorrectly extends Uint8Array<ArrayBufferLike>`. A única diferença na 5ª foi o
+`tsconfig.json` ir dentro do pacote. Como o job usou TS 5.9.3 nas duas, foi o
+`skipLibCheck` que silenciou os erros dos `.d.ts`.
+
+Ou seja: o compilador **lê** o `tsconfig.json` do App. Lembre que o empacotador do CLI
+tem `'**/tsconfig.json'` entre os ignorados — `scripts/package.js` injeta o arquivo no
+ZIP depois da geração e verifica que entrou.
+
+### Anatomia dos cinco erros
 
 **Quatro submissões reprovadas** até estas duas linhas ficarem certas. O compilador do
 Marketplace é o `TypescriptCompiler` do `@rocket.chat/apps-compiler`, e três
