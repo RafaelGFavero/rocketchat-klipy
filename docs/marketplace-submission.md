@@ -26,7 +26,7 @@ Não abra a submissão antes de fechar todos estes.
 | 0.12 | Nenhuma credencial no repositório | ✅ Verificado |
 | 0.13 | Build do Marketplace compilando | ✅ 04/08/2026 — status `Compiled`, TS 5.9.3, Engine 1.46.0, 15,2s (5ª tentativa) |
 | 0.14 | **Short Description** e **Categories** na listagem | 🔴 **em branco no portal** — ver §2.2 |
-| 0.15 | Submeter a versão para revisão (sair de `Draft`) | 🔴 Pendente — último passo |
+| 0.15 | Submeter a versão para revisão | ✅ Automático — ver §9 |
 
 ---
 
@@ -501,6 +501,35 @@ Antecipando o que o revisor vai perguntar:
 | Há código de terceiros? | Não. Tenor e Giphy foram referência de comportamento, sem cópia de código. |
 
 ---
+
+## 9. Não existe botão "Submit for Review"
+
+Isto confunde e não está claro na documentação do portal: **não há ação de submeter**.
+Depois de compilar, a versão entra na fila de revisão sozinha.
+
+```
+Draft  →  Compiling  →  Compiled  →  Approval / Reviewed
+                           ↑
+                  aguardando revisão humana
+```
+
+O dropdown **Actions** da linha da versão oferece apenas:
+
+| Ação | O que faz |
+|---|---|
+| `Reject` | **Retira** a sua submissão da fila — só existe porque ela já está lá |
+| `Edit info` | Volta ao formulário de detalhes da listagem |
+
+Duas leituras de status que se confundem:
+
+- **status da versão** (`Compiled`) → é o que indica que está aguardando revisão;
+- **status do App** (`Draft`) → só muda para publicado quando uma versão é **aprovada**,
+  não quando é submetida.
+
+Ou seja, ver `Draft` depois de tudo pronto **não** significa que algo ficou pendente.
+
+Para acompanhar: o ⓘ ao lado do número da versão mostra o estado em palavras, e o portal
+envia e-mail em cada mudança de estágio para o endereço do publicador.
 
 ## 8. Depois da publicação
 
