@@ -5,6 +5,16 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Autorizações
+
+- **KLIPY aprovou a integração em 05/08/2026** (ticket CSM-117): arquitetura server-side,
+  atribuição e uso do nome "KLIPY" no título, os três "fine as described". A aprovação é
+  uma **exceção condicionada** a ser um App gratuito que promove o KLIPY — registrado na
+  cláusula 2.1 dos [TERMS.md](TERMS.md), porque afeta qualquer decisão futura de
+  monetização.
+- Submetido ao Rocket.Chat Marketplace em 04/08/2026. Versão `Compiled`, aguardando
+  revisão.
+
 ### Corrigido
 
 - **O pacote não compilava no servidor de build do Marketplace.** A primeira submissão

@@ -17,7 +17,7 @@ Não abra a submissão antes de fechar todos estes.
 | 0.3 | Preencher a matriz de compatibilidade do README com resultados observados | ✅ Feito — 6.13 testado, 7.10 parcial, ambos documentados |
 | 0.4 | Produzir as cinco screenshots | ✅ Feito — `docs/screenshots/`, **960×540 (16:9)**, chave mascarada |
 | 0.5 | Acesso de produção da chave KLIPY | ➖ Não se aplica — **cada workspace usa a própria chave** e solicita produção por conta. A nossa serve só para desenvolvimento e testes |
-| 0.6 | Confirmar com o KLIPY a cláusula de requisições originadas no cliente (§4 abaixo) | 🟡 Declarado no cadastro em 04/08/2026 — aguardando retorno |
+| 0.6 | Confirmar com o KLIPY a cláusula de requisições originadas no cliente (§4 abaixo) | ✅ **Aprovado em 05/08/2026** — ticket CSM-117, os três pontos |
 | 0.7 | URLs públicas (suporte, termos, privacidade) | ✅ Feito — repositório público, as três respondem HTTP 200 |
 | 0.8 | Criar conta no **Publisher Portal** | ✅ Feito em 04/08/2026 — é conta separada da Rocket.Chat Cloud |
 | 0.9 | Obter API Key do KLIPY | ✅ Feito — plataforma `Rocket.Chat GIF Integration`, chave `RocketChat-Server` |
@@ -383,7 +383,40 @@ no caminho — o "intermediário" é a infraestrutura do próprio workspace que 
 Entendemos que isso não configura o proxy que a cláusula pretende proibir, mas a
 divergência é literal e precisa de confirmação **por escrito** antes da publicação.
 
-### Já declarado — 04/08/2026
+### ✅ Aprovado pelo KLIPY — 05/08/2026
+
+Ticket **CSM-117**, resposta da KLIPY Customer Support:
+
+> *"While you're building a free app that will also promote KLIPY, we can make an
+> exception for you, so all three points are fine as described. Feel free to proceed with
+> publishing."*
+
+Os três pontos aprovados foram exatamente os que perguntamos:
+
+| # | Pergunta | Situação |
+|---|---|---|
+| 1 | Chamadas server-side a partir da instância do cliente | ✅ aceito |
+| 2 | Atribuição implementada (placeholder + "Powered by KLIPY") | ✅ aceito |
+| 3 | Uso de "KLIPY" no nome do App publicado | ✅ aceito |
+
+### ⚠️ A aprovação é uma exceção condicionada
+
+Repare na palavra que eles usaram: **"exception"**. Não é que a arquitetura server-side
+seja compatível com os *Integration Requirements* — é uma dispensa concedida a este App,
+e a resposta deixa a contrapartida explícita: *"a **free** app that will also **promote**
+KLIPY"*.
+
+Duas consequências práticas para decisões futuras:
+
+- **Cobrar pelo App invalida a premissa da exceção.** Se algum dia a ideia de monetizar
+  aparecer, o assunto tem de voltar ao KLIPY antes.
+- **A atribuição é a contrapartida, não um enfeite.** É o que faz o App "promover
+  KLIPY". Por isso ela não pode ser desligada — o setting
+  `klipy_show_attribution_link` só controla se o texto vira link.
+
+Guardar o e-mail do ticket CSM-117: é a prova da autorização.
+
+### Histórico: declarado no cadastro — 04/08/2026
 
 A arquitetura foi informada ao KLIPY no próprio cadastro da plataforma no Partner Panel,
 no campo de descrição da integração (limitado a 500 caracteres):

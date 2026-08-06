@@ -29,6 +29,16 @@ escolher.
 Não existe servidor, proxy ou banco de dados operado por nós em nenhum ponto do fluxo.
 Não recebemos, armazenamos nem processamos qualquer dado seu. Ver [PRIVACY.md](PRIVACY.md).
 
+## 2.1 Autorização do KLIPY
+
+A arquitetura deste App — chamadas feitas pelo servidor Rocket.Chat de cada cliente, com
+a chave desse cliente — foi submetida ao KLIPY e **autorizada em 05/08/2026** (ticket
+CSM-117), junto com a atribuição implementada e o uso do nome "KLIPY" no título.
+
+A autorização é uma **exceção concedida** na condição de este ser um App **gratuito** que
+**promove o KLIPY** por meio da atribuição. Por isso a atribuição não é opcional: ela é a
+contrapartida da autorização. Tornar o App pago exigiria nova conversa com o KLIPY.
+
 ## 3. Sua chave da API do KLIPY é sua
 
 Para funcionar, o App precisa de uma API Key que **você** obtém diretamente no

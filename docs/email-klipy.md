@@ -1,5 +1,23 @@
 # E-mail ao KLIPY — confirmação da arquitetura
 
+> ## ✅ Enviado e **aprovado** — ticket CSM-117, 05/08/2026
+>
+> Resposta da KLIPY Customer Support:
+>
+> > *"While you're building a free app that will also promote KLIPY, we can make an
+> > exception for you, so all three points are fine as described. Feel free to proceed
+> > with publishing."*
+>
+> Os três pontos — arquitetura server-side, atribuição e uso do nome "KLIPY" — foram
+> aceitos como descritos.
+>
+> **Atenção ao termo "exception":** é uma dispensa condicionada a ser um App **gratuito**
+> que **promove** o KLIPY. Ver
+> [marketplace-submission.md](marketplace-submission.md#-a-aprovação-é-uma-exceção-condicionada)
+> e a cláusula 2.1 dos [TERMS.md](../TERMS.md).
+>
+> O texto abaixo fica como registro do que foi perguntado.
+
 Escrito em inglês porque é o idioma de atendimento do KLIPY (`developers@klipy.com`).
 
 **Contexto:** a arquitetura já foi declarada no campo de descrição do cadastro da
