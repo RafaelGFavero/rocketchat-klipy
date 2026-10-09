@@ -26,7 +26,7 @@ Não abra a submissão antes de fechar todos estes.
 | 0.12 | Nenhuma credencial no repositório | ✅ Verificado |
 | 0.13 | Build do Marketplace compilando | ✅ 04/08/2026 — status `Compiled`, TS 5.9.3, Engine 1.46.0, 15,2s (5ª tentativa) |
 | 0.14 | **Short Description** e **Categories** na listagem | 🔴 **em branco no portal** — ver §2.2 |
-| 0.15 | Submeter a versão para revisão | ✅ Automático — ver §9 |
+| 0.15 | Submeter a versão para revisão | 🟡 0.1.0 parada em `compiled` de 04/08 a 09/10/2026 sem resposta — ver §9 |
 
 ---
 
@@ -535,34 +535,47 @@ Antecipando o que o revisor vai perguntar:
 
 ---
 
-## 9. Não existe botão "Submit for Review"
+## 9. Status da revisão e o botão "Submit for Review"
 
-Isto confunde e não está claro na documentação do portal: **não há ação de submeter**.
-Depois de compilar, a versão entra na fila de revisão sozinha.
+Uma versão anterior desta seção afirmava que não existe botão de submeter. **Estava
+errado.** A [documentação oficial](https://developer.rocket.chat/docs/app-submission-to-the-marketplace)
+descreve o último passo do formulário como **Submit for Review**. O que confundiu: o
+fluxo **Edit info** termina em **Save and finish**, que só grava a listagem e não
+submete nada.
 
 ```
-Draft  →  Compiling  →  Compiled  →  Approval / Reviewed
-                           ↑
-                  aguardando revisão humana
+Draft → Compiling → Compiled → Approved → (você clica Publish) → published
+                       ↑            ↘ Reviewed = não aprovado, e-mail com o motivo
+          "fica aqui até um admin revisar"
 ```
 
-O dropdown **Actions** da linha da versão oferece apenas:
+Dois pontos da documentação que mudam o que fazer:
 
-| Ação | O que faz |
-|---|---|
-| `Reject` | **Retira** a sua submissão da fila — só existe porque ela já está lá |
-| `Edit info` | Volta ao formulário de detalhes da listagem |
+- **Aprovar não publica.** Depois do e-mail de aprovação, é preciso voltar ao portal e
+  publicar.
+- **`Draft` no App** só muda quando uma versão é publicada.
 
-Duas leituras de status que se confundem:
+### Conferir o status sem o portal
 
-- **status da versão** (`Compiled`) → é o que indica que está aguardando revisão;
-- **status do App** (`Draft`) → só muda para publicado quando uma versão é **aprovada**,
-  não quando é submetida.
+A API pública do Marketplace devolve o status de qualquer versão, sem login:
 
-Ou seja, ver `Draft` depois de tudo pronto **não** significa que algo ficou pendente.
+```powershell
+(Invoke-RestMethod "https://marketplace.rocket.chat/v1/apps/88c860bf-0794-4052-8625-c7b2f20ff0eb?appVersion=0.1.0").status
+```
 
-Para acompanhar: o ⓘ ao lado do número da versão mostra o estado em palavras, e o portal
-envia e-mail em cada mudança de estágio para o endereço do publicador.
+`compiled` significa na fila. Os Apps do catálogo aparecem como `published`.
+
+### O que aconteceu com a 0.1.0
+
+Em 09/10/2026 a 0.1.0 seguia `compiled`, 66 dias depois da submissão, sem e-mail de
+aprovação nem de reprovação. No mesmo período, Apps de outros publicadores saíram em 2 a
+40 dias (TeamsMeetings, CCNet Claw, Rocket.Poker, WhatsApp Serpro). Não dá para saber
+pelo lado de fora se a versão chegou a entrar na fila ou se ficou esquecida nela.
+
+Plano: submeter a 0.1.1 pelo fluxo de upload de versão, clicando **Submit for Review**
+no fim, e escrever para **marketplace@rocket.chat**, o contato que
+a [página de diretrizes](https://developer.rocket.chat/apps-engine/app-submission-to-the-marketplace/written-content)
+indica para dúvidas sobre a revisão.
 
 ## 8. Depois da publicação
 
