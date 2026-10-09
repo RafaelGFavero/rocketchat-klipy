@@ -18,8 +18,6 @@ export interface KlipyGif {
     gifUrl: string;
     /** Página do item no site do KLIPY, quando disponível. */
     pageUrl?: string;
-    width?: number;
-    height?: number;
 }
 
 export interface KlipySearchOptions {
@@ -88,10 +86,6 @@ export class KlipyError extends Error {
  */
 export interface KlipyRawMediaObject {
     url?: unknown;
-    dims?: unknown;
-    size?: unknown;
-    duration?: unknown;
-    preview?: unknown;
 }
 
 export interface KlipyRawResponseObject {
@@ -106,9 +100,6 @@ export interface KlipyRawEnvelope {
     results?: unknown;
     next?: unknown;
 }
-
-/** Formatos de GIF animado, do maior para o menor. Ver docs/api-contract.md §7.3. */
-export const GIF_FORMATS_LARGEST_FIRST = ['gif', 'mediumgif', 'tinygif', 'nanogif'] as const;
 
 /**
  * Ordem de escolha da miniatura do preview.

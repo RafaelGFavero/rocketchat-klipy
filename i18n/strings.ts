@@ -17,77 +17,50 @@ export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 export const DEFAULT_LANGUAGE: SupportedLanguage = 'en';
 
-export type StringKey =
-    | 'klipy_command_description'
-    | 'klipy_command_params_example'
-    | 'klipy_preview_title'
-    | 'klipy_settings_section'
-    | 'klipy_setting_api_key_label'
-    | 'klipy_setting_api_key_description'
-    | 'klipy_setting_locale_label'
-    | 'klipy_setting_locale_description'
-    | 'klipy_setting_content_filter_label'
-    | 'klipy_setting_content_filter_description'
-    | 'klipy_setting_content_filter_off'
-    | 'klipy_setting_content_filter_low'
-    | 'klipy_setting_content_filter_medium'
-    | 'klipy_setting_content_filter_high'
-    | 'klipy_setting_result_limit_label'
-    | 'klipy_setting_result_limit_description'
-    | 'klipy_setting_show_title_label'
-    | 'klipy_setting_show_title_description'
-    | 'klipy_setting_show_attribution_link_label'
-    | 'klipy_setting_show_attribution_link_description'
-    | 'klipy_usage'
-    | 'klipy_attribution'
-    | 'klipy_error_not_configured'
-    | 'klipy_error_no_results'
-    | 'klipy_error_auth'
-    | 'klipy_error_rate_limit'
-    | 'klipy_error_unavailable'
-    | 'klipy_error_malformed'
-    | 'klipy_error_post_failed';
+const EN = {
+    klipy_command_description: 'Search and share GIFs from KLIPY. Example: /klipy congratulations',
+    // Exigência de atribuição do KLIPY: "Search KLIPY" é o placeholder padrão do
+    // campo de busca. No Rocket.Chat esse placeholder é o i18nParamsExample.
+    // Não traduzir — é marca.
+    klipy_command_params_example: 'Search KLIPY',
+    klipy_preview_title: 'Powered by KLIPY',
+    klipy_settings_section: 'KLIPY',
+    klipy_setting_api_key_label: 'KLIPY API Key',
+    klipy_setting_api_key_description:
+        'Private key issued in the KLIPY Partner Panel (partner.klipy.com). It is stored only in this workspace and never appears in messages or logs.',
+    klipy_setting_locale_label: 'Search language',
+    klipy_setting_locale_description:
+        'Language used to interpret searches, as xx or xx_YY (ISO 639-1 plus optional ISO 3166-1 country). Examples: en_US, pt_BR, es. Also the language of the app\'s help and error messages for users who have not chosen a language in their profile.',
+    klipy_setting_content_filter_label: 'Content filter',
+    klipy_setting_content_filter_description: 'Content safety level applied to search results.',
+    klipy_setting_content_filter_off: 'Off',
+    klipy_setting_content_filter_low: 'Low',
+    klipy_setting_content_filter_medium: 'Medium',
+    klipy_setting_content_filter_high: 'High',
+    klipy_setting_result_limit_label: 'Number of results',
+    klipy_setting_result_limit_description:
+        'How many GIFs to offer in the preview, from 8 to 10. Rocket.Chat never displays more than 10.',
+    klipy_setting_show_title_label: 'Show GIF title',
+    klipy_setting_show_title_description: 'Include the KLIPY title of the GIF in the posted message.',
+    klipy_setting_show_attribution_link_label: 'Link the KLIPY attribution',
+    klipy_setting_show_attribution_link_description:
+        'Turn the "Powered by KLIPY" attribution into a link to klipy.com. The attribution itself is always shown.',
+    klipy_usage: 'Type a term to search.\n\nExample: `/klipy congratulations`',
+    klipy_attribution: 'Powered by KLIPY',
+    klipy_error_not_configured:
+        'The KLIPY App is not configured yet. Ask an administrator to set the API Key in the App settings.',
+    klipy_error_no_results: 'No GIF was found for "{query}".',
+    klipy_error_auth: 'Could not authenticate with the KLIPY API. Check the App configuration.',
+    klipy_error_rate_limit: 'The temporary KLIPY request limit was reached. Try again later.',
+    klipy_error_unavailable: 'The GIF service is temporarily unavailable.',
+    klipy_error_malformed: 'KLIPY returned an unexpected response.',
+    klipy_error_post_failed: 'The GIF could not be posted in this room.',
+};
+
+export type StringKey = keyof typeof EN;
 
 export const STRINGS: Record<SupportedLanguage, Record<StringKey, string>> = {
-    en: {
-        klipy_command_description: 'Search and share GIFs from KLIPY. Example: /klipy congratulations',
-        // Exigência de atribuição do KLIPY: "Search KLIPY" é o placeholder padrão do
-        // campo de busca. No Rocket.Chat esse placeholder é o i18nParamsExample.
-        // Não traduzir — é marca.
-        klipy_command_params_example: 'Search KLIPY',
-        klipy_preview_title: 'Powered by KLIPY',
-        klipy_settings_section: 'KLIPY',
-        klipy_setting_api_key_label: 'KLIPY API Key',
-        klipy_setting_api_key_description:
-            'Private key issued in the KLIPY Partner Panel (partner.klipy.com). It is stored only in this workspace and never appears in messages or logs.',
-        klipy_setting_locale_label: 'Search language',
-        klipy_setting_locale_description:
-            'Language used to interpret searches, as xx or xx_YY (ISO 639-1 plus optional ISO 3166-1 country). Examples: en_US, pt_BR, es. Also the language of the app\'s help and error messages for users who have not chosen a language in their profile.',
-        klipy_setting_content_filter_label: 'Content filter',
-        klipy_setting_content_filter_description: 'Content safety level applied to search results.',
-        klipy_setting_content_filter_off: 'Off',
-        klipy_setting_content_filter_low: 'Low',
-        klipy_setting_content_filter_medium: 'Medium',
-        klipy_setting_content_filter_high: 'High',
-        klipy_setting_result_limit_label: 'Number of results',
-        klipy_setting_result_limit_description:
-            'How many GIFs to offer in the preview, from 8 to 10. Rocket.Chat never displays more than 10.',
-        klipy_setting_show_title_label: 'Show GIF title',
-        klipy_setting_show_title_description: 'Include the KLIPY title of the GIF in the posted message.',
-        klipy_setting_show_attribution_link_label: 'Link the KLIPY attribution',
-        klipy_setting_show_attribution_link_description:
-            'Turn the "Powered by KLIPY" attribution into a link to klipy.com. The attribution itself is always shown.',
-        klipy_usage: 'Type a term to search.\n\nExample: `/klipy congratulations`',
-        klipy_attribution: 'Powered by KLIPY',
-        klipy_error_not_configured:
-            'The KLIPY App is not configured yet. Ask an administrator to set the API Key in the App settings.',
-        klipy_error_no_results: 'No GIF was found for "{query}".',
-        klipy_error_auth: 'Could not authenticate with the KLIPY API. Check the App configuration.',
-        klipy_error_rate_limit: 'The temporary KLIPY request limit was reached. Try again later.',
-        klipy_error_unavailable: 'The GIF service is temporarily unavailable.',
-        klipy_error_malformed: 'KLIPY returned an unexpected response.',
-        klipy_error_post_failed: 'The GIF could not be posted in this room.',
-    },
+    en: EN,
     pt: {
         klipy_command_description: 'Pesquise e compartilhe GIFs do KLIPY. Exemplo: /klipy comemoração',
         klipy_command_params_example: 'Search KLIPY',

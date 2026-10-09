@@ -16,13 +16,13 @@ describe('pickFormatUrl', () => {
     };
 
     it('escolhe tinygif para o preview', () => {
-        expect(pickFormatUrl(formats, PREVIEW_FORMAT_ORDER)?.url).toBe(
+        expect(pickFormatUrl(formats, PREVIEW_FORMAT_ORDER)).toBe(
             'https://static.klipy.com/tiny.gif',
         );
     });
 
     it('escolhe gif em tamanho cheio para o envio', () => {
-        expect(pickFormatUrl(formats, SEND_FORMAT_ORDER)?.url).toBe(
+        expect(pickFormatUrl(formats, SEND_FORMAT_ORDER)).toBe(
             'https://static.klipy.com/full.gif',
         );
     });
@@ -30,7 +30,7 @@ describe('pickFormatUrl', () => {
     it('cai para o próximo formato quando o preferido não existe', () => {
         const { tinygif: _omitted, ...withoutTiny } = formats;
 
-        expect(pickFormatUrl(withoutTiny, PREVIEW_FORMAT_ORDER)?.url).toBe(
+        expect(pickFormatUrl(withoutTiny, PREVIEW_FORMAT_ORDER)).toBe(
             'https://static.klipy.com/nano.gif',
         );
     });
@@ -42,7 +42,7 @@ describe('pickFormatUrl', () => {
             mediumgif: { url: 'https://static.klipy.com/medium.gif', dims: [400, 226] },
         };
 
-        expect(pickFormatUrl(hostile, PREVIEW_FORMAT_ORDER)?.url).toBe(
+        expect(pickFormatUrl(hostile, PREVIEW_FORMAT_ORDER)).toBe(
             'https://static.klipy.com/medium.gif',
         );
     });
@@ -62,22 +62,6 @@ describe('pickFormatUrl', () => {
         expect(pickFormatUrl('nem objeto é', SEND_FORMAT_ORDER)).toBeUndefined();
         expect(pickFormatUrl(null, SEND_FORMAT_ORDER)).toBeUndefined();
     });
-
-    it('extrai largura e altura da tupla dims', () => {
-        const picked = pickFormatUrl(formats, SEND_FORMAT_ORDER);
-
-        expect(picked?.width).toBe(498);
-        expect(picked?.height).toBe(281);
-    });
-
-    it('tolera dims ausente ou com formato inesperado', () => {
-        const odd = { gif: { url: 'https://static.klipy.com/a.gif', dims: 'grande' } };
-        const picked = pickFormatUrl(odd, SEND_FORMAT_ORDER);
-
-        expect(picked?.url).toBe('https://static.klipy.com/a.gif');
-        expect(picked?.width).toBeUndefined();
-        expect(picked?.height).toBeUndefined();
-    });
 });
 
 describe('normalizeItem', () => {
@@ -92,8 +76,6 @@ describe('normalizeItem', () => {
             gifUrl:
                 'https://static.klipy.com/ii/4e7bea9f7a3371424e6c16ebc93252fe/80/7c/faEUNiNuq5TjUsuXzv.gif',
             pageUrl: 'https://klipy.com/gifs/excited-im-so-excited-22',
-            width: 498,
-            height: 281,
         });
     });
 
