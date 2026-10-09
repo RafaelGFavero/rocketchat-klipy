@@ -68,14 +68,14 @@ Verificado no formulário real em 04/08/2026.
 | Nome | KLIPY GIFs for Rocket.Chat |
 | Slug | `klipy-gifs` |
 | UUID | `88c860bf-0794-4052-8625-c7b2f20ff0eb` |
-| Versão | 0.1.0 |
+| Versão | 0.1.1 |
 | Preço | Gratuito |
 | Categoria sugerida | *Productivity* / *Fun* (o portal define a lista final; escolher a mais próxima de "conteúdo e mídia") |
 | Idiomas | Português e Inglês |
 | Licença | MIT |
 | Autor | RF Tecnologia — <https://rftecnologia.org> |
 | **Suporte** | `https://github.com/RafaelGFavero/rocketchat-klipy/issues` |
-| **Documentação** | `https://github.com/RafaelGFavero/rocketchat-klipy#readme` |
+| **Documentação** | `https://github.com/RafaelGFavero/rocketchat-klipy/blob/main/docs/USER-GUIDE.md` |
 
 ### 2.2 Campos que ficaram em branco no portal 🔴
 
@@ -106,7 +106,7 @@ conteúdo duplicado — os arquivos já existem e são versionados junto com o c
 | Suporte | `https://github.com/RafaelGFavero/rocketchat-klipy/issues` |
 | Termos de Uso | `https://github.com/RafaelGFavero/rocketchat-klipy/blob/main/TERMS.md` |
 | Privacidade | `https://github.com/RafaelGFavero/rocketchat-klipy/blob/main/PRIVACY.md` |
-| Documentação | `https://github.com/RafaelGFavero/rocketchat-klipy#readme` |
+| Documentação | `https://github.com/RafaelGFavero/rocketchat-klipy/blob/main/docs/USER-GUIDE.md` |
 
 **Situação: pronto.** O repositório foi publicado em 04/08/2026 —
 <https://github.com/RafaelGFavero/rocketchat-klipy> — público, branch padrão `main`,
@@ -528,7 +528,7 @@ Antecipando o que o revisor vai perguntar:
 | Onde fica a credencial? | Setting privado tipo `PASSWORD`, por workspace. Nunca no código. |
 | O App envia dados para o desenvolvedor? | Não. Não há backend do autor. Ver PRIVACY.md. |
 | O App guarda algo? | Não. `persistence` não é declarada. |
-| Como evita XSS por URL maliciosa? | `isSafeHttpsUrl()` em toda URL; só HTTPS; esquemas perigosos rejeitados. |
+| Como evita XSS por URL maliciosa? | `isSafeHttpsUrl()` em toda URL; só HTTPS e domínio `klipy.com`; esquemas perigosos, outros hosts e URL com barra invertida, espaço ou caractere de controle rejeitados. |
 | O payload do cliente é confiável? | Não é tratado como confiável. Só o `id` é aproveitado, e o item é reconsultado na API antes de publicar. |
 | Usa marca de terceiro? | O nome, de forma descritiva. Nenhum logotipo do KLIPY é distribuído; o ícone é original. |
 | Há código de terceiros? | Não. Tenor e Giphy foram referência de comportamento, sem cópia de código. |

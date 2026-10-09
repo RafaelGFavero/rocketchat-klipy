@@ -3,7 +3,46 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [Não lançado]
+## [0.1.1] — 2026-10-09
+
+### Corrigido
+
+- **A correção de idioma da 0.1.0 nunca funcionou num servidor real.** Ela lia o setting
+  `Language` do servidor, e essa leitura exige a permissão `server-setting.read`, que o
+  App não declara. O Rocket.Chat recusava a chamada e as mensagens voltavam ao inglês.
+  Os testes não pegaram porque o mock devolvia o valor sem checar permissão. Agora, para
+  quem não escolheu idioma no perfil, as mensagens seguem o setting *Idioma da pesquisa*
+  do próprio App, sem permissão nova. O padrão desse setting passou de `pt_BR` para
+  `en_US`, que também é o valor usado quando o configurado é inválido. Em workspace de
+  língua portuguesa, defina-o como `pt_BR`.
+- **Falha ao publicar não culpa mais o serviço de GIFs.** Quando o Rocket.Chat recusa a
+  mensagem (sala só leitura, usuário silenciado, sala com criptografia ponta a ponta), o
+  usuário via "O serviço de GIFs está temporariamente indisponível.". Agora vê "Não foi
+  possível publicar o GIF nesta sala.", e o log registra a operação `post` sem detalhe
+  da sala.
+- **Só URL do domínio `klipy.com` chega à mensagem.** `isSafeHttpsUrl()` aceitava
+  qualquer host HTTPS. Agora exige `klipy.com` ou um subdomínio, tanto nas URLs de mídia
+  quanto no link do título. Também recusa URL com barra invertida, espaço ou caractere de
+  controle, porque clientes com parser RFC 3986 (o iOS, por exemplo) leem
+  `https://klipy.com\@evil.com` com host `evil.com`.
+
+### Removido
+
+- Código morto ou duplicado: as dimensões do GIF (`dims`, largura e altura), a constante
+  `GIF_FORMATS_LARGEST_FIRST`, o tipo `KlipyRawMediaObject`, o cursor de paginação
+  `next`, os valores do filtro de conteúdo repetidos no registro dos settings, a união
+  `StringKey` escrita à mão (agora derivada das próprias strings) e a interface
+  `IKlipyClient`, que tinha uma única implementação, junto com `KlipySearchOptions` e
+  `KlipySearchResult`. `KlipyClient.search(termo, settings)` devolve a lista de GIFs.
+  No total da versão, o código de produção (`.ts` fora de `tests/`) ficou 137 linhas
+  menor: 103 adicionadas, 240 removidas.
+
+### Documentação
+
+- Guia de uso em inglês: [docs/USER-GUIDE.md](docs/USER-GUIDE.md).
+- [PRIVACY.md](PRIVACY.md) e [TERMS.md](TERMS.md) com a versão em inglês no topo.
+
+## [0.1.0] — correções antes da submissão (2026-08-04)
 
 ### Autorizações
 
@@ -132,5 +171,5 @@ servidor Rocket.Chat real — ver *Limitações conhecidas*.
   próprio cliente. Detalhes em
   [docs/api-contract.md](docs/api-contract.md#13-requisitos-de-integração-com-impacto-neste-app).
 
-[Não lançado]: https://github.com/RafaelGFavero/rocketchat-klipy/compare/v0.1.0...HEAD
+[0.1.1]: https://github.com/RafaelGFavero/rocketchat-klipy/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/RafaelGFavero/rocketchat-klipy/releases/tag/v0.1.0

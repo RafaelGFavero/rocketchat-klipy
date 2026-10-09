@@ -1,6 +1,6 @@
 # Plano de testes manuais
 
-Os 185 testes automatizados cobrem cliente HTTP, normalização, validação, montagem de
+Os 198 testes automatizados cobrem cliente HTTP, normalização, validação, montagem de
 mensagem, settings, slash command e i18n — mas rodam contra fixtures. Nada aqui foi exercitado contra um servidor
 Rocket.Chat real nem contra a API real do KLIPY.
 
@@ -114,6 +114,7 @@ partir da documentação, sem nunca chamar a API.
 | 6.5 | Timeout | Bloquear com DROP (não REJECT) e esperar 10 s | Mesma mensagem de indisponibilidade | |
 | 6.6 | Resposta malformada | Apontar `api.klipy.com` para um servidor que devolve HTML | "O KLIPY retornou uma resposta inesperada." | |
 | 6.7 | Preview sem chave | Limpar a chave e digitar `/klipy teste` | Galeria vazia, **sem notificação a cada tecla** | |
+| 6.8 | Publicação recusada | Escolher um GIF numa sala só leitura, ou com o usuário silenciado | "Não foi possível publicar o GIF nesta sala." | |
 
 ## 7. Segurança
 
@@ -162,6 +163,7 @@ Limitações encontradas por cliente devem ir para o README, na seção de troub
 | 10.4 | Verificar o placeholder ao digitar `/klipy` | **"Search KLIPY"** — exigência do KLIPY | |
 | 10.5 | Verificar o título da galeria de preview | "Powered by KLIPY" | |
 | 10.6 | Usuário com idioma não traduzido (ex.: alemão) | Cai para inglês, sem chave crua na tela | |
+| 10.7 | Usuário sem idioma no perfil, com *Idioma da pesquisa* = `pt_BR`: `/klipy` sem termo | Ajuda em português; nenhum `PermissionDeniedError` no log do servidor | |
 
 ## 11. Settings em uso
 
@@ -172,8 +174,8 @@ Limitações encontradas por cliente devem ir para o README, na seção de troub
 | 11.3 | Definir 2 | Ajustado para 8; sem erro | |
 | 11.4 | Desligar "Mostrar título do GIF" | Mensagem sem título; atribuição continua | |
 | 11.5 | Desligar "Transformar a atribuição em link" | Texto "Powered by KLIPY" continua, sem link | |
-| 11.6 | Colocar locale inválido (`portugues`) | Cai para `pt_BR`; busca continua funcionando | |
-| 11.7 | Trocar o idioma para `en_US` | Resultados mudam de acordo | |
+| 11.6 | Colocar locale inválido (`portugues`) | Cai para `en_US`; busca continua funcionando | |
+| 11.7 | Trocar o idioma para `pt_BR` | Resultados mudam de acordo | |
 
 ## 12. Atualização
 

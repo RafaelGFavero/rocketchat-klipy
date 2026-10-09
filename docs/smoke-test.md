@@ -22,6 +22,8 @@
 > **Um bug encontrado e corrigido:** as mensagens do App saíam em inglês numa interface
 > em português. Detalhes em [CHANGELOG.md](../CHANGELOG.md) e na seção *Idioma das
 > mensagens* do [README](../README.md#idioma-das-mensagens).
+> Em 09/10/2026 a revisão de código mostrou que essa correção não funcionava fora do mock
+> (faltava `server-setting.read`). Refeita na 0.1.1 sem permissão nova — ver CHANGELOG.
 >
 > **Screenshots:** as cinco da submissão foram capturadas na mesma sessão e estão em
 > `docs/screenshots/`.
@@ -46,7 +48,7 @@ e a API Key do KLIPY.
 
 | # | Passo | O que precisa acontecer | Se falhar |
 |---|---|---|---|
-| 1 | `npm run package` e subir `dist/klipy-gifs_0.1.0.zip` em Administração → Apps → Upload App | Instala sem erro | `requiredApiVersion` está errado — anote a versão do Apps-Engine do workspace e ajuste |
+| 1 | `npm run package` e subir `dist/klipy-gifs_0.1.1.zip` em Administração → Apps → Upload App | Instala sem erro | `requiredApiVersion` está errado — anote a versão do Apps-Engine do workspace e ajuste |
 | 2 | Ler a tela de permissões da instalação | Aparecem **três**: networking, slashcommand, message.write | Manifesto divergente |
 | 3 | Abrir Settings do App | Seis campos, com **rótulos traduzidos** | Se aparecer `klipy_setting_api_key_label` cru, o formato do i18n está errado |
 | 4 | Olhar o campo da API Key | **Mascarado** (bolinhas) | `SettingType.PASSWORD` não se comporta como esperado |

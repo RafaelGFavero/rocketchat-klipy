@@ -16,9 +16,10 @@ conhecida e solução em um minuto.
 | "O limite temporário de consultas foi atingido." | Chave de teste: 100 req/h | Aguarde a virada da hora ou peça produção no Partner Panel |
 | "O serviço de GIFs está temporariamente indisponível." | O servidor não alcança `api.klipy.com` | Libere o domínio na saída do servidor (HTTPS/443) |
 | "O KLIPY retornou uma resposta inesperada." | Proxy devolvendo HTML no lugar da API | Verifique se algo intercepta o tráfego HTTPS do servidor |
+| "Não foi possível publicar o GIF nesta sala." | O Rocket.Chat recusou a mensagem: sala só leitura, usuário silenciado ou sala com criptografia ponta a ponta | Publique onde o usuário pode escrever |
 | A galeria não aparece ao digitar | Chave ausente/errada, ou falha na API | Pressione Enter: o App responde com o erro específico, visível só para você |
 | A galeria aparece, mas o GIF não carrega | Clientes sem acesso à mídia | Libere `static.klipy.com`, `static1.klipy.com` e `static2.klipy.com` **para os usuários**, não só para o servidor |
-| Mensagens do App em inglês | Nem o usuário nem o workspace definiram idioma | Defina o idioma padrão em Administração → Configurações → Geral → Idioma |
+| Mensagens do App em inglês | O usuário não escolheu idioma no perfil, e o *Idioma da pesquisa* do App está no padrão `en_US` | Defina *Idioma da pesquisa* como `pt_BR` nas configurações do App |
 
 O guia completo está no [README](README.md#troubleshooting).
 

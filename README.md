@@ -2,6 +2,8 @@
 
 Pesquise e compartilhe GIFs do [KLIPY](https://klipy.com) sem sair da conversa.
 
+**English:** [user guide](docs/USER-GUIDE.md).
+
 ```
 /klipy comemoração
 ```
@@ -187,7 +189,7 @@ npm ci
 npm run package
 ```
 
-O ZIP sai em `dist/klipy-gifs_0.1.0.zip`. Suba por **Administração → Apps → Upload App**,
+O ZIP sai em `dist/klipy-gifs_0.1.1.zip`. Suba por **Administração → Apps → Upload App**,
 ou faça deploy direto:
 
 ```bash
@@ -210,7 +212,7 @@ usuários comuns não conseguem lê-las.
 | Setting | Id | Tipo | Padrão | Descrição |
 |---|---|---|---|---|
 | API Key do KLIPY | `klipy_api_key` | Password | *(vazio)* | **Obrigatória.** Chave do Partner Panel. Campo mascarado. |
-| Idioma da pesquisa | `klipy_locale` | String | `pt_BR` | `xx` ou `xx_YY`. Valor inválido cai no padrão. |
+| Idioma da pesquisa | `klipy_locale` | String | `en_US` | `xx` ou `xx_YY`. Valor inválido cai no padrão. Também define o idioma das mensagens do App para quem não escolheu idioma no perfil. |
 | Filtro de conteúdo | `klipy_content_filter` | Select | `medium` | `off`, `low`, `medium` ou `high`. |
 | Quantidade de resultados | `klipy_result_limit` | Number | `10` | Faixa 8–10 (ver nota). |
 | Mostrar título do GIF | `klipy_show_title` | Boolean | `true` | Inclui o título do KLIPY na mensagem. |
@@ -252,14 +254,16 @@ Já as mensagens que o App **monta no servidor** (ajuda e erros) dependem de o s
 saber o idioma, e ele tem apenas duas fontes:
 
 1. o idioma escolhido pelo usuário no perfil;
-2. o idioma padrão do workspace (**Administração → Configurações → Geral → Idioma**).
+2. o setting *Idioma da pesquisa* do App (padrão `en_US`).
 
-Quando **as duas** estão vazias, o App usa inglês — mesmo que a interface apareça em
-português. Não é um descuido: o Rocket.Chat traduz a interface pelo idioma do navegador,
-e essa informação não é repassada aos Apps. Não há como um App descobri-la.
+Quem nunca escolheu idioma no perfil recebe as mensagens no idioma da pesquisa, mesmo
+que a interface apareça em português. O Rocket.Chat traduz a interface pelo idioma do
+navegador, e essa informação não é repassada aos Apps. O idioma padrão do workspace
+também não é usado, porque lê-lo exigiria a permissão `server-setting.read` (ver
+[Permissões](#permissões)).
 
-> **Recomendação ao administrador:** defina o idioma padrão do workspace. Sem isso,
-> usuários que nunca escolheram idioma no perfil receberão as mensagens do App em inglês.
+> **Recomendação ao administrador:** em workspace de língua portuguesa, defina
+> *Idioma da pesquisa* como `pt_BR`.
 
 ## Permissões
 
@@ -284,6 +288,7 @@ Permissões **deliberadamente não pedidas**:
 | `api` | O App não expõe endpoint HTTP. |
 | `scheduler` | Não roda tarefas em segundo plano. |
 | `ui.interact` / `ui.registerButtons` | A interação inteira acontece pelo preview nativo do slash command. |
+| `server-setting.read` | Daria acesso a todos os settings do servidor. O idioma de fallback vem do setting do próprio App. |
 
 > Nota técnica: o campo `domains` da permissão `networking` é declarativo. Ele
 > documenta o destino para quem revisa o manifesto, mas as versões atuais do
@@ -311,6 +316,7 @@ Resumo — o texto completo está em [PRIVACY.md](PRIVACY.md):
 | "O serviço de GIFs está temporariamente indisponível." | Timeout, falha de rede, proxy bloqueando ou erro 5xx do KLIPY | Confirme que o servidor alcança `api.klipy.com` em HTTPS/443. |
 | "O KLIPY retornou uma resposta inesperada." | Resposta fora do contrato — normalmente um proxy devolvendo HTML | Verifique se algo intercepta a saída HTTPS do servidor. |
 | "Nenhum GIF foi encontrado para …" | Sem resultados para o termo | Tente outro termo ou reduza o filtro de conteúdo. |
+| "Não foi possível publicar o GIF nesta sala." | O Rocket.Chat recusou a mensagem: sala só leitura, usuário silenciado ou sala com criptografia ponta a ponta | Publique onde o usuário pode escrever. |
 | A galeria não aparece enquanto digito | Chave ausente/errada, ou o KLIPY falhou | O preview fica em silêncio de propósito, para não notificar a cada tecla. Confirme o comando com Enter para ver a mensagem de erro. |
 | A galeria aparece, mas o GIF não carrega na mensagem | Clientes sem acesso a `static*.klipy.com` | Libere os domínios de mídia para as máquinas dos usuários, não só para o servidor. |
 
@@ -365,12 +371,12 @@ dois saírem de sincronia.
 npm test
 ```
 
-185 testes em 7 suítes, cobrindo o cliente HTTP, a normalização de mídia, a validação,
+198 testes em 7 suítes, cobrindo o cliente HTTP, a normalização de mídia, a validação,
 a montagem das mensagens, os settings, o slash command e o catálogo de i18n. Nenhum
 deles toca a rede: as fixtures em `tests/fixtures/` foram derivadas dos exemplos
 publicados na documentação do KLIPY e não contêm chave nenhuma.
 
-Cobertura das camadas testáveis fora do Apps-Engine: **98% das linhas, 95% dos ramos**
+Cobertura das camadas testáveis fora do Apps-Engine: **99% das linhas, 96% dos ramos**
 (`npm run test:coverage`).
 
 Há testes dedicados a garantir que a API Key não aparece em log, em mensagem de erro
@@ -380,8 +386,8 @@ chamada.
 ## Empacotamento
 
 ```bash
-npm run package          # dist/klipy-gifs_0.1.0.zip
-npm run package:source   # dist/klipy-gifs_0.1.0_source.zip
+npm run package          # dist/klipy-gifs_0.1.1.zip
+npm run package:source   # dist/klipy-gifs_0.1.1_source.zip
 ```
 
 Os dois scripts chamam `rc-apps package` a partir de uma cópia limpa do App, montada

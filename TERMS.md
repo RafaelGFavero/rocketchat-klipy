@@ -2,8 +2,8 @@
 
 Português: [ver abaixo](#termos-de-uso)
 
-**KLIPY GIFs for Rocket.Chat** — version 0.1.0
-Last updated: 4 August 2026
+**KLIPY GIFs for Rocket.Chat** — version 0.1.1
+Last updated: 9 October 2026
 
 By installing or using this App, you agree to these terms. If you do not agree, do not
 install it.
@@ -125,8 +125,8 @@ Support and questions about these terms: see [SUPPORT.md](SUPPORT.md).
 
 # Termos de Uso
 
-**KLIPY GIFs for Rocket.Chat** — versão 0.1.0
-Última atualização: 04 de agosto de 2026
+**KLIPY GIFs for Rocket.Chat** — versão 0.1.1
+Última atualização: 09 de outubro de 2026
 
 Ao instalar ou usar este App, você concorda com estes termos. Se não concordar, não o
 instale.

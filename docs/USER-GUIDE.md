@@ -81,15 +81,15 @@ All settings live in **Administration > Apps > KLIPY GIFs > Settings**.
 | Setting | Default | What it does |
 |---|---|---|
 | KLIPY API Key | empty | Required. Masked in the admin screen, never written to messages or logs |
-| Search language | `pt_BR` | Language KLIPY uses to interpret searches, as `xx` or `xx_YY` (for example `en_US`, `es`). An invalid value falls back to the default |
+| Search language | `en_US` | Language KLIPY uses to interpret searches, as `xx` or `xx_YY` (for example `en_US`, `es`). An invalid value falls back to the default. Also the language of the app's messages for users who haven't chosen one in their profile |
 | Content filter | Medium | Safety level of the results: Off, Low, Medium or High |
 | Number of results | 10 | How many GIFs the gallery offers, from 8 to 10. Rocket.Chat never shows more than 10 |
 | Show GIF title | On | Adds KLIPY's title for the GIF to the posted message |
 | Link the KLIPY attribution | On | Turns "Powered by KLIPY" into a link to klipy.com. The attribution itself is always shown |
 
-The app's help and error messages follow the user's language preference, then the
-workspace default language (**Administration > Settings > General > Language**), then
-English. English and Portuguese are included.
+The app's help and error messages follow the user's language preference. Users who never
+chose one get the language set in **Search language**. English and Portuguese are
+included; any other language falls back to English.
 
 ## Uninstalling
 
@@ -109,6 +109,7 @@ To stop using the key as well, revoke it in the KLIPY Partner Panel.
 | "The temporary KLIPY request limit was reached." | Test key used up its 100 requests per hour | Wait for the next hour or request production access |
 | "The GIF service is temporarily unavailable." | Timeout, blocked network, or a KLIPY server error | Check that the server reaches `api.klipy.com` on port 443 |
 | "KLIPY returned an unexpected response." | Something, usually a proxy, answered in KLIPY's place | Check what intercepts the server's outbound HTTPS |
+| "The GIF could not be posted in this room." | Rocket.Chat refused the message: read-only room, muted user, or an end-to-end encrypted room | Post somewhere the user can write |
 | No gallery while typing | Missing or wrong key, or KLIPY failed | Press Enter to see the error. The gallery stays silent on errors so it doesn't notify on every keystroke |
 | The gallery works but the posted GIF doesn't load | Users' devices can't reach `static*.klipy.com` | Allow the media domains for client machines, not only the server |
 

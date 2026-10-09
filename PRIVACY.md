@@ -2,7 +2,7 @@
 
 Português: [ver abaixo](#privacidade)
 
-Applies to the **KLIPY GIFs for Rocket.Chat** App, version 0.1.0.
+Applies to the **KLIPY GIFs for Rocket.Chat** App, version 0.1.1.
 
 This document describes exactly what the App does with data. It promises nothing that
 cannot be verified in the source code of this repository.
@@ -93,7 +93,7 @@ This is verified by automated tests in `tests/KlipyClient.test.ts`.
 
 For each operation, the App's administrative logs record:
 
-- the operation name (`search` or `lookup`);
+- the operation name (`search`, `lookup`, or `post` when Rocket.Chat refuses the message);
 - the **sanitized** URL;
 - the HTTP status;
 - the error category;
@@ -133,7 +133,7 @@ Questions about the processing of data by the KLIPY API: developers@klipy.com
 
 # Privacidade
 
-Referente ao App **KLIPY GIFs for Rocket.Chat**, versão 0.1.0.
+Referente ao App **KLIPY GIFs for Rocket.Chat**, versão 0.1.1.
 
 Este documento descreve exatamente o que o App faz com dados. Ele não promete nada que
 não possa ser verificado no código-fonte deste repositório.
@@ -224,7 +224,7 @@ Isso é verificado por testes automatizados em `tests/KlipyClient.test.ts`.
 
 Os logs administrativos do App registram, por operação:
 
-- o nome da operação (`search` ou `lookup`);
+- o nome da operação (`search`, `lookup`, ou `post` quando o Rocket.Chat recusa a mensagem);
 - a URL **sanitizada**;
 - o status HTTP;
 - a categoria do erro;
