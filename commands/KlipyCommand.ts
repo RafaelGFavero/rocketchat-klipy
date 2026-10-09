@@ -8,6 +8,7 @@ import { SlashCommandContext, SlashCommandPreviewItemType } from '@rocket.chat/a
 
 import { SupportedLanguage, StringKey, resolveLanguage, translate } from '../i18n/strings';
 import { readKlipySettings } from '../settings/registerSettings';
+import type { KlipyRuntimeSettings } from '../settings/registerSettings';
 import { KlipyClient } from '../services/KlipyClient';
 import { KlipyError, KlipyErrorKind, KlipyGif } from '../types/klipy';
 import { buildGifAttachment } from '../utils/messages';
@@ -65,13 +66,7 @@ export class KlipyCommand implements ISlashCommand {
         }
 
         try {
-            const { items } = await new KlipyClient(http, this.logger).search({
-                query,
-                apiKey: settings.apiKey,
-                locale: settings.locale,
-                contentFilter: settings.contentFilter,
-                limit: settings.resultLimit,
-            });
+            const items = await new KlipyClient(http, this.logger).search(query, settings);
 
             if (!items.length) {
                 await this.notify(
@@ -116,13 +111,7 @@ export class KlipyCommand implements ISlashCommand {
         }
 
         try {
-            const { items } = await new KlipyClient(http, this.logger).search({
-                query,
-                apiKey: settings.apiKey,
-                locale: settings.locale,
-                contentFilter: settings.contentFilter,
-                limit: settings.resultLimit,
-            });
+            const items = await new KlipyClient(http, this.logger).search(query, settings);
 
             return {
                 i18nTitle: 'klipy_preview_title',
@@ -172,7 +161,7 @@ export class KlipyCommand implements ISlashCommand {
         const client = new KlipyClient(http, this.logger);
 
         try {
-            const gif = await this.resolveSelectedGif(client, context, settings.apiKey, id, settings);
+            const gif = await this.resolveSelectedGif(client, context, id, settings);
 
             if (!gif) {
                 await this.notify(modify, context, translate('klipy_error_unavailable', language));
@@ -195,11 +184,10 @@ export class KlipyCommand implements ISlashCommand {
     private async resolveSelectedGif(
         client: KlipyClient,
         context: SlashCommandContext,
-        apiKey: string,
         id: string,
-        settings: { locale: string; contentFilter: string; resultLimit: number },
+        settings: KlipyRuntimeSettings,
     ): Promise<KlipyGif | undefined> {
-        const direct = await client.getById({ id, apiKey });
+        const direct = await client.getById({ id, apiKey: settings.apiKey });
 
         if (direct) {
             return direct;
@@ -211,13 +199,7 @@ export class KlipyCommand implements ISlashCommand {
             return undefined;
         }
 
-        const { items } = await client.search({
-            query,
-            apiKey,
-            locale: settings.locale,
-            contentFilter: settings.contentFilter,
-            limit: settings.resultLimit,
-        });
+        const items = await client.search(query, settings);
 
         return items.find((candidate) => candidate.id === id);
     }

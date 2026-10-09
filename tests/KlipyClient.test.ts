@@ -58,17 +58,19 @@ function respondWith(statusCode: number, data?: unknown, content?: string): IHtt
     };
 }
 
-const baseOptions = {
+const QUERY = 'festa';
+
+const baseSettings = {
     apiKey: API_KEY,
     locale: 'pt_BR',
-    contentFilter: 'medium',
-    limit: 10,
+    contentFilter: 'medium' as const,
+    resultLimit: 10,
 };
 
 describe('KlipyClient.search — construção da requisição', () => {
     it('chama o endpoint /v2/search da camada compatível com Tenor', async () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, searchSuccess));
-        await new KlipyClient(makeHttp(get)).search({ ...baseOptions, query: 'festa' });
+        await new KlipyClient(makeHttp(get)).search(QUERY, baseSettings);
 
         const [url] = get.mock.calls[0];
 
@@ -77,7 +79,7 @@ describe('KlipyClient.search — construção da requisição', () => {
 
     it('nunca usa o endpoint da API nativa', async () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, searchSuccess));
-        await new KlipyClient(makeHttp(get)).search({ ...baseOptions, query: 'festa' });
+        await new KlipyClient(makeHttp(get)).search(QUERY, baseSettings);
 
         expect(get.mock.calls[0][0]).not.toContain('/api/v1/');
         expect(get.mock.calls[0][0]).not.toContain('per_page');
@@ -85,7 +87,7 @@ describe('KlipyClient.search — construção da requisição', () => {
 
     it('envia todos os parâmetros do contrato', async () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, searchSuccess));
-        await new KlipyClient(makeHttp(get)).search({ ...baseOptions, query: 'festa' });
+        await new KlipyClient(makeHttp(get)).search(QUERY, baseSettings);
 
         const url = get.mock.calls[0][0];
 
@@ -97,9 +99,21 @@ describe('KlipyClient.search — construção da requisição', () => {
         expect(url).toContain('media_filter=nanogif%2Ctinygif%2Cmediumgif%2Cgif');
     });
 
+    it('usa limite e filtro dos settings, não os valores padrão', async () => {
+        // baseSettings coincide com os padrões nesses dois campos; sem este caso, ler o
+        // campo errado passaria despercebido.
+        const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, searchSuccess));
+        await new KlipyClient(makeHttp(get)).search(QUERY, { ...baseSettings, resultLimit: 8, contentFilter: 'high' });
+
+        const url = get.mock.calls[0][0];
+
+        expect(url).toContain('limit=8');
+        expect(url).toContain('contentfilter=high');
+    });
+
     it('faz encoding da consulta com espaço e acento', async () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, searchSuccess));
-        await new KlipyClient(makeHttp(get)).search({ ...baseOptions, query: 'bom dia comemoração' });
+        await new KlipyClient(makeHttp(get)).search('bom dia comemoração', baseSettings);
 
         const url = get.mock.calls[0][0];
 
@@ -108,7 +122,7 @@ describe('KlipyClient.search — construção da requisição', () => {
 
     it('faz encoding de caracteres que quebrariam a query string', async () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, searchSuccess));
-        await new KlipyClient(makeHttp(get)).search({ ...baseOptions, query: 'a&b=c?d#e' });
+        await new KlipyClient(makeHttp(get)).search('a&b=c?d#e', baseSettings);
 
         const url = get.mock.calls[0][0];
 
@@ -119,7 +133,7 @@ describe('KlipyClient.search — construção da requisição', () => {
 
     it('define um timeout na requisição', async () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, searchSuccess));
-        await new KlipyClient(makeHttp(get)).search({ ...baseOptions, query: 'festa' });
+        await new KlipyClient(makeHttp(get)).search(QUERY, baseSettings);
 
         expect(get.mock.calls[0][1]?.timeout).toBeGreaterThan(0);
     });
@@ -128,7 +142,7 @@ describe('KlipyClient.search — construção da requisição', () => {
         const get: HttpGetMock = jest.fn();
         const client = new KlipyClient(makeHttp(get));
 
-        await expect(client.search({ ...baseOptions, apiKey: '   ', query: 'festa' })).rejects.toMatchObject({
+        await expect(client.search(QUERY, { ...baseSettings, apiKey: '   ' })).rejects.toMatchObject({
             kind: KlipyErrorKind.NOT_CONFIGURED,
         });
         expect(get).not.toHaveBeenCalled();
@@ -140,7 +154,7 @@ describe('KlipyClient.search — a API Key não vaza', () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, searchSuccess));
         const { logger, dump } = makeLogger();
 
-        await new KlipyClient(makeHttp(get), logger).search({ ...baseOptions, query: 'festa' });
+        await new KlipyClient(makeHttp(get), logger).search(QUERY, baseSettings);
 
         expect(dump()).not.toContain(API_KEY);
     });
@@ -155,7 +169,7 @@ describe('KlipyClient.search — a API Key não vaza', () => {
         const { logger, dump } = makeLogger();
         const client = new KlipyClient(makeHttp(get), logger);
 
-        await expect(client.search({ ...baseOptions, query: 'festa' })).rejects.toBeInstanceOf(KlipyError);
+        await expect(client.search(QUERY, baseSettings)).rejects.toBeInstanceOf(KlipyError);
         expect(dump()).not.toContain(API_KEY);
     });
 
@@ -164,7 +178,7 @@ describe('KlipyClient.search — a API Key não vaza', () => {
         const { logger, dump } = makeLogger();
         const client = new KlipyClient(makeHttp(get), logger);
 
-        await expect(client.search({ ...baseOptions, query: 'festa' })).rejects.toBeInstanceOf(KlipyError);
+        await expect(client.search(QUERY, baseSettings)).rejects.toBeInstanceOf(KlipyError);
         expect(dump()).not.toContain(API_KEY);
     });
 
@@ -174,7 +188,7 @@ describe('KlipyClient.search — a API Key não vaza', () => {
         const client = new KlipyClient(makeHttp(get), logger);
 
         await expect(
-            client.search({ ...baseOptions, query: 'assunto-particular-do-usuario' }),
+            client.search('assunto-particular-do-usuario', baseSettings),
         ).rejects.toBeInstanceOf(KlipyError);
         expect(dump()).not.toContain('assunto-particular-do-usuario');
     });
@@ -183,7 +197,7 @@ describe('KlipyClient.search — a API Key não vaza', () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(401));
         const client = new KlipyClient(makeHttp(get));
 
-        const error = await client.search({ ...baseOptions, query: 'festa' }).catch((raised) => raised);
+        const error = await client.search(QUERY, baseSettings).catch((raised) => raised);
 
         expect(error).toBeInstanceOf(KlipyError);
         expect(String((error as Error).message)).not.toContain(API_KEY);
@@ -195,28 +209,27 @@ describe('KlipyClient.search — a API Key não vaza', () => {
 describe('KlipyClient.search — interpretação da resposta', () => {
     it('converte uma resposta válida para o modelo interno', async () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, searchSuccess));
-        const result = await new KlipyClient(makeHttp(get)).search({ ...baseOptions, query: 'festa' });
+        const result = await new KlipyClient(makeHttp(get)).search(QUERY, baseSettings);
 
-        expect(result.items).toHaveLength(3);
-        expect(result.items[0].id).toBe('2525964843568523');
-        expect(result.items[0].gifUrl).toContain('https://static.klipy.com/');
-        expect(result.next).toBe('3');
+        expect(result).toHaveLength(3);
+        expect(result[0].id).toBe('2525964843568523');
+        expect(result[0].gifUrl).toContain('https://static.klipy.com/');
     });
 
     it('lê o corpo de content quando data não vem parseado', async () => {
         const get: HttpGetMock = jest
             .fn()
             .mockResolvedValue(respondWith(200, undefined, JSON.stringify(searchSuccess)));
-        const result = await new KlipyClient(makeHttp(get)).search({ ...baseOptions, query: 'festa' });
+        const result = await new KlipyClient(makeHttp(get)).search(QUERY, baseSettings);
 
-        expect(result.items).toHaveLength(3);
+        expect(result).toHaveLength(3);
     });
 
     it('trata resposta sem resultados como sucesso vazio, não como erro', async () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, searchEmpty));
-        const result = await new KlipyClient(makeHttp(get)).search({ ...baseOptions, query: 'xyzzy' });
+        const result = await new KlipyClient(makeHttp(get)).search('xyzzy', baseSettings);
 
-        expect(result.items).toEqual([]);
+        expect(result).toEqual([]);
     });
 
     it.each([
@@ -229,7 +242,7 @@ describe('KlipyClient.search — interpretação da resposta', () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, body));
         const client = new KlipyClient(makeHttp(get));
 
-        await expect(client.search({ ...baseOptions, query: 'festa' })).rejects.toMatchObject({
+        await expect(client.search(QUERY, baseSettings)).rejects.toMatchObject({
             kind: KlipyErrorKind.MALFORMED,
         });
     });
@@ -238,7 +251,7 @@ describe('KlipyClient.search — interpretação da resposta', () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, undefined, '<html>502</html>'));
         const client = new KlipyClient(makeHttp(get));
 
-        await expect(client.search({ ...baseOptions, query: 'festa' })).rejects.toMatchObject({
+        await expect(client.search(QUERY, baseSettings)).rejects.toMatchObject({
             kind: KlipyErrorKind.MALFORMED,
         });
     });
@@ -259,14 +272,14 @@ describe('KlipyClient.search — mapeamento de status HTTP', () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(statusCode));
         const client = new KlipyClient(makeHttp(get));
 
-        await expect(client.search({ ...baseOptions, query: 'festa' })).rejects.toMatchObject({ kind });
+        await expect(client.search(QUERY, baseSettings)).rejects.toMatchObject({ kind });
     });
 
     it('preserva o status no erro para diagnóstico', async () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(429));
         const client = new KlipyClient(makeHttp(get));
 
-        await expect(client.search({ ...baseOptions, query: 'festa' })).rejects.toMatchObject({
+        await expect(client.search(QUERY, baseSettings)).rejects.toMatchObject({
             statusCode: 429,
         });
     });
@@ -275,7 +288,7 @@ describe('KlipyClient.search — mapeamento de status HTTP', () => {
         const get: HttpGetMock = jest.fn().mockRejectedValue(new Error('ETIMEDOUT'));
         const client = new KlipyClient(makeHttp(get));
 
-        await expect(client.search({ ...baseOptions, query: 'festa' })).rejects.toMatchObject({
+        await expect(client.search(QUERY, baseSettings)).rejects.toMatchObject({
             kind: KlipyErrorKind.UNAVAILABLE,
         });
     });
@@ -284,7 +297,7 @@ describe('KlipyClient.search — mapeamento de status HTTP', () => {
         const get: HttpGetMock = jest.fn().mockRejectedValue('boom');
         const client = new KlipyClient(makeHttp(get));
 
-        await expect(client.search({ ...baseOptions, query: 'festa' })).rejects.toBeInstanceOf(KlipyError);
+        await expect(client.search(QUERY, baseSettings)).rejects.toBeInstanceOf(KlipyError);
     });
 });
 
@@ -312,7 +325,7 @@ describe('KlipyClient.getById', () => {
 
     it('a busca continua enviando media_filter, onde ele é aceito', async () => {
         const get: HttpGetMock = jest.fn().mockResolvedValue(respondWith(200, searchSuccess));
-        await new KlipyClient(makeHttp(get)).search({ ...baseOptions, query: 'festa' });
+        await new KlipyClient(makeHttp(get)).search(QUERY, baseSettings);
 
         expect(get.mock.calls[0][0]).toContain('media_filter=nanogif%2Ctinygif%2Cmediumgif%2Cgif');
     });

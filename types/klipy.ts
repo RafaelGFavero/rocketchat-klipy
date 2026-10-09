@@ -20,29 +20,9 @@ export interface KlipyGif {
     pageUrl?: string;
 }
 
-export interface KlipySearchOptions {
-    query: string;
-    apiKey: string;
-    locale: string;
-    contentFilter: string;
-    limit: number;
-}
-
 export interface KlipyLookupOptions {
     id: string;
     apiKey: string;
-}
-
-export interface KlipySearchResult {
-    items: Array<KlipyGif>;
-    /** Cursor de paginação devolvido pelo KLIPY. Não usado no MVP. */
-    next?: string;
-}
-
-export interface IKlipyClient {
-    search(options: KlipySearchOptions): Promise<KlipySearchResult>;
-    /** Re-consulta um item pelo id. Base da estratégia de seleção segura. */
-    getById(options: KlipyLookupOptions): Promise<KlipyGif | undefined>;
 }
 
 /**
@@ -94,7 +74,6 @@ export interface KlipyRawResponseObject {
 
 export interface KlipyRawEnvelope {
     results?: unknown;
-    next?: unknown;
 }
 
 /**
