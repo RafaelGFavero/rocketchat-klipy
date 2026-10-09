@@ -33,10 +33,11 @@ export function normalizeQuery(args?: Array<string> | string): string {
 }
 
 /**
- * Só aceita URL HTTPS bem formada e de tamanho razoável.
+ * Só aceita URL HTTPS bem formada, de tamanho razoável e do domínio do KLIPY.
  *
- * Isto é a barreira contra `javascript:`, `data:` e `file:` chegarem a um
- * `imageUrl` de mensagem. Aplica-se a **toda** URL vinda da API, sem exceção.
+ * Toda URL que passa aqui veio da API e vai parar em `imageUrl` ou em link de
+ * mensagem, carregada pelo cliente de cada membro da sala. Barra `javascript:`,
+ * `data:`, `file:` e qualquer host fora de `klipy.com`.
  */
 export function isSafeHttpsUrl(value: unknown): value is string {
     if (typeof value !== 'string') {
@@ -51,8 +52,9 @@ export function isSafeHttpsUrl(value: unknown): value is string {
 
     try {
         const parsed = new URL(trimmed);
+        const host = parsed.hostname;
 
-        return parsed.protocol === 'https:' && parsed.hostname.length > 0;
+        return parsed.protocol === 'https:' && (host === 'klipy.com' || host.endsWith('.klipy.com'));
     } catch {
         return false;
     }
