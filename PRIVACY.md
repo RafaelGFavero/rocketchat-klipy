@@ -93,11 +93,14 @@ This is verified by automated tests in `tests/KlipyClient.test.ts`.
 
 For each operation, the App's administrative logs record:
 
-- the operation name (`search`, `lookup`, or `post` when Rocket.Chat refuses the message);
+- the operation name (`search` or `lookup`);
 - the **sanitized** URL;
 - the HTTP status;
 - the error category;
 - the duration in milliseconds.
+
+When Rocket.Chat refuses to post the GIF, the log entry has only the operation (`post`)
+and the error category: no URL, status or duration.
 
 They do **not** record: the API Key, authentication headers, the full URL, the response
 body, conversation content, user identification or the search term. The term is redacted
@@ -224,11 +227,14 @@ Isso é verificado por testes automatizados em `tests/KlipyClient.test.ts`.
 
 Os logs administrativos do App registram, por operação:
 
-- o nome da operação (`search`, `lookup`, ou `post` quando o Rocket.Chat recusa a mensagem);
+- o nome da operação (`search` ou `lookup`);
 - a URL **sanitizada**;
 - o status HTTP;
 - a categoria do erro;
 - a duração em milissegundos.
+
+Quando o Rocket.Chat recusa a publicação do GIF, o registro tem só a operação (`post`) e
+a categoria do erro, sem URL, status ou duração.
 
 Eles **não** registram: API Key, cabeçalhos de autenticação, URL completa, corpo da
 resposta, conteúdo de conversas, identificação do usuário ou o termo pesquisado. O termo

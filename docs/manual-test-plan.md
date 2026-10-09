@@ -1,6 +1,6 @@
 # Plano de testes manuais
 
-Os 198 testes automatizados cobrem cliente HTTP, normalização, validação, montagem de
+Os 199 testes automatizados cobrem cliente HTTP, normalização, validação, montagem de
 mensagem, settings, slash command e i18n — mas rodam contra fixtures. Nada aqui foi exercitado contra um servidor
 Rocket.Chat real nem contra a API real do KLIPY.
 

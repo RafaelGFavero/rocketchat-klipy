@@ -110,7 +110,9 @@ conteúdo duplicado — os arquivos já existem e são versionados junto com o c
 
 **Situação: pronto.** O repositório foi publicado em 04/08/2026 —
 <https://github.com/RafaelGFavero/rocketchat-klipy> — público, branch padrão `main`,
-issues habilitadas. As quatro URLs foram verificadas e respondem **HTTP 200**. O
+issues habilitadas. As URLs de suporte, termos e privacidade foram verificadas em
+04/08/2026 e respondem **HTTP 200**. A de documentação (`docs/USER-GUIDE.md` em `main`)
+só passa a responder depois do merge da branch da 0.1.1: confira antes de submeter. O
 `app.json` já aponta para o endereço de issues.
 
 Alternativa, se preferir separar do GitHub: hospedar as mesmas páginas em
@@ -156,7 +158,9 @@ histórico público, sem você montar formulário nem caixa de e-mail dedicada.
 >    (partner.klipy.com/api-keys → API Keys → Add Platform).
 > 2. No Rocket.Chat: Administração → Apps → KLIPY GIFs → Settings.
 > 3. Cole a chave em "API Key do KLIPY" e salve.
-> 4. Em qualquer sala, digite `/klipy comemoração`.
+> 4. Em workspace de língua portuguesa, defina "Idioma da pesquisa" como `pt_BR`. Isso
+>    também define o idioma das mensagens do App para quem não escolheu idioma no perfil.
+> 5. Em qualquer sala, digite `/klipy comemoração`.
 >
 > A chave nasce em modo de teste, com 100 requisições por hora. Peça acesso de produção
 > pelo próprio Partner Panel do KLIPY quando terminar de testar.
@@ -181,8 +185,8 @@ Saída em `dist/`:
 
 | Arquivo | Uso |
 |---|---|
-| `klipy-gifs_0.1.0.zip` | Pacote compilado (bundle) |
-| `klipy-gifs_0.1.0_source.zip` | Código-fonte, para a revisão |
+| `klipy-gifs_0.1.1.zip` | Pacote compilado (bundle) |
+| `klipy-gifs_0.1.1_source.zip` | Código-fonte, para a revisão |
 
 Os dois scripts empacotam a partir de uma cópia limpa. Confira antes de enviar:
 
@@ -499,22 +503,34 @@ Conferido antes de enviar:
 
 ## 6. Changelog
 
-O portal pede dois textos.
+O portal pede dois textos. Os da 0.1.1 estão abaixo, prontos para colar. A 0.1.0 foi
+submetida com o texto de primeira versão ("Primeira versão. Comando `/klipy`…").
 
 **Público** (aparece para quem instala):
 
-> Primeira versão. Comando `/klipy` para pesquisar e compartilhar GIFs do KLIPY, com
-> galeria de resultados, configuração por workspace e interface em português e inglês.
+```
+Fixes:
+- Help and error messages now follow the app's Search language for users who have not chosen a language in their profile. The default search language is now en_US.
+- When Rocket.Chat refuses a post (read-only room, muted user, encrypted room), the app now says so instead of reporting the GIF service as unavailable.
+- Posted messages only accept media from klipy.com.
+```
 
-**Interno** (para a equipe de revisão): use a seção 0.1.0 do
-[CHANGELOG.md](../CHANGELOG.md), que traz as decisões técnicas e as limitações
-conhecidas. Vale mencionar explicitamente na submissão:
+**Interno** (para a equipe de revisão):
 
-- o App não faz persistência e não pede a permissão correspondente;
-- a chave é setting privado, tipo password, e não aparece em log;
-- a URL publicada é sempre confirmada com a API antes de ir para a sala, nunca vem do
-  cliente;
-- o contrato da API está documentado em `docs/api-contract.md`.
+```
+Version 0.1.0 has been in Compiled status since 4 August 2026 without a review email. This update replaces it.
+
+Changes since 0.1.0:
+- Removed the read of the server setting "Language", which requires server-setting.read (not declared). Message language now falls back to the app's own klipy_locale setting. Permissions are unchanged: networking (api.klipy.com), slashcommand, message.write.
+- A failure in modify.getCreator().finish() is no longer reported to the user as a KLIPY outage.
+- isSafeHttpsUrl accepts only https URLs on klipy.com and its subdomains, and rejects backslashes, whitespace and control characters.
+- Removed unused code (net -138 lines of production TypeScript).
+- English user guide: https://github.com/RafaelGFavero/rocketchat-klipy/blob/main/docs/USER-GUIDE.md
+
+Build notes, unchanged from 0.1.0: the package carries its own tsconfig.json (types: [], skipLibCheck: true) and pins typescript 4.9.5 and @types/node 18.11.19 so it compiles on the Marketplace build.
+
+Tested: 199 unit tests; end to end on Rocket.Chat 6.13 (install, settings, search, preview, post).
+```
 
 ---
 

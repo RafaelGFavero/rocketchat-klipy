@@ -55,7 +55,9 @@ when you need more.
 1. Go to **Administration > Marketplace** and search for **KLIPY GIFs**.
 2. Click **Install** and accept the permissions listed below.
 3. Open the app's **Settings**, paste the API key into **KLIPY API Key** and save.
-4. In any room, type `/klipy congratulations`.
+4. In a Portuguese-speaking workspace, set **Search language** to `pt_BR`. This also sets
+   the language of the app's messages for users who haven't chosen one in their profile.
+5. In any room, type `/klipy congratulations`.
 
 Network requirements, if you have an egress proxy or firewall:
 

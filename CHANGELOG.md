@@ -22,9 +22,10 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   da sala.
 - **Só URL do domínio `klipy.com` chega à mensagem.** `isSafeHttpsUrl()` aceitava
   qualquer host HTTPS. Agora exige `klipy.com` ou um subdomínio, tanto nas URLs de mídia
-  quanto no link do título. Também recusa URL com barra invertida, espaço ou caractere de
-  controle, porque clientes com parser RFC 3986 (o iOS, por exemplo) leem
-  `https://klipy.com\@evil.com` com host `evil.com`.
+  quanto no link do título. Também recusa URL com barra invertida, porque clientes com
+  parser RFC 3986 (o iOS, por exemplo) leem `https://klipy.com\@evil.com` com host
+  `evil.com`. Espaço, caractere de controle e DEL, em qualquer posição da string, são
+  recusados por precaução: a string publicada tem de ser exatamente a validada.
 
 ### Removido
 
@@ -34,8 +35,8 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   `StringKey` escrita à mão (agora derivada das próprias strings) e a interface
   `IKlipyClient`, que tinha uma única implementação, junto com `KlipySearchOptions` e
   `KlipySearchResult`. `KlipyClient.search(termo, settings)` devolve a lista de GIFs.
-  No total da versão, o código de produção (`.ts` fora de `tests/`) ficou 137 linhas
-  menor: 103 adicionadas, 240 removidas.
+  No total da versão, o código de produção (`.ts` fora de `tests/`) ficou 138 linhas
+  menor: 105 adicionadas, 243 removidas.
 
 ### Documentação
 

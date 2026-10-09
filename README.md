@@ -172,7 +172,9 @@ Para remover o limite, solicite **acesso de produção** pelo próprio Partner P
 2. Procure por **KLIPY GIFs**.
 3. Clique em **Install** e confirme as permissões apresentadas.
 4. Abra as configurações do App e informe a API Key.
-5. Em qualquer sala, teste com `/klipy comemoração`.
+5. Em workspace de língua portuguesa, defina *Idioma da pesquisa* como `pt_BR`. Isso
+   também define o idioma das mensagens do App para quem não escolheu idioma no perfil.
+6. Em qualquer sala, teste com `/klipy comemoração`.
 
 ## Instalação em ambiente de desenvolvimento
 
@@ -256,11 +258,12 @@ saber o idioma, e ele tem apenas duas fontes:
 1. o idioma escolhido pelo usuário no perfil;
 2. o setting *Idioma da pesquisa* do App (padrão `en_US`).
 
-Quem nunca escolheu idioma no perfil recebe as mensagens no idioma da pesquisa, mesmo
-que a interface apareça em português. O Rocket.Chat traduz a interface pelo idioma do
-navegador, e essa informação não é repassada aos Apps. O idioma padrão do workspace
-também não é usado, porque lê-lo exigiria a permissão `server-setting.read` (ver
-[Permissões](#permissões)).
+Quem nunca escolheu idioma no perfil recebe as mensagens no idioma da pesquisa. O App
+traz português e inglês, e qualquer outro idioma cai no inglês. Com o padrão `en_US`,
+as mensagens saem em inglês mesmo quando a interface aparece em português, porque o
+Rocket.Chat traduz a interface pelo idioma do navegador, e essa informação não é
+repassada aos Apps. O idioma padrão do workspace também não é usado, porque lê-lo
+exigiria a permissão `server-setting.read` (ver [Permissões](#permissões)).
 
 > **Recomendação ao administrador:** em workspace de língua portuguesa, defina
 > *Idioma da pesquisa* como `pt_BR`.
@@ -371,7 +374,7 @@ dois saírem de sincronia.
 npm test
 ```
 
-198 testes em 7 suítes, cobrindo o cliente HTTP, a normalização de mídia, a validação,
+199 testes em 7 suítes, cobrindo o cliente HTTP, a normalização de mídia, a validação,
 a montagem das mensagens, os settings, o slash command e o catálogo de i18n. Nenhum
 deles toca a rede: as fixtures em `tests/fixtures/` foram derivadas dos exemplos
 publicados na documentação do KLIPY e não contêm chave nenhuma.

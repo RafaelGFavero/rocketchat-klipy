@@ -232,10 +232,11 @@ utilizável para *ambos* os papéis (preview e envio) são descartados.
   esquema são rejeitados;
 - host `klipy.com` ou um subdomínio dele (`static.klipy.com`, por exemplo); qualquer outro host
   é rejeitado;
-- nenhuma barra invertida, espaço ou caractere de controle ASCII na URL. O `URL` (WHATWG) do
-  servidor e clientes com parser RFC 3986 (o iOS, por exemplo) leem esses caracteres de formas
-  diferentes. Em `https://klipy.com\@evil.com`, o servidor vê o host `klipy.com` e esses
-  clientes veem `evil.com`;
+- nenhuma barra invertida na URL. O `URL` (WHATWG) do servidor e clientes com parser RFC 3986
+  (o iOS, por exemplo) a leem de formas diferentes: em `https://klipy.com\@evil.com`, o servidor
+  vê o host `klipy.com` e esses clientes veem `evil.com`;
+- nenhum espaço, caractere de controle ASCII ou DEL em posição alguma da string, nem nas pontas.
+  É precaução: a string publicada é a crua, então tem de ser exatamente a validada;
 - comprimento máximo de 2048 caracteres.
 
 `sanitizeUrlForLog()` substitui o valor de `key` por `***` antes de qualquer log.
@@ -276,11 +277,12 @@ handoff:
 3. a URL publicada é a que a API acabou de devolver, validada por `isSafeHttpsUrl()` (HTTPS e
    domínio `klipy.com`).
 
-Se `/v2/posts` não devolver o item (um erro de rede ou de status é reportado ao usuário, sem nova
-tentativa), o App refaz a busca original (`context.getArguments()`
-continua disponível em `executePreviewItem`) e localiza o item pelo `id`. Só se ambos falharem a
-seleção é abortada com `error.unavailable`. Em nenhum caminho uma URL de origem não verificada
-chega à sala.
+Se `/v2/posts` não devolver o item (um erro de rede, de status ou uma resposta malformada é
+reportado ao usuário, sem nova tentativa), o App refaz a busca original (`context.getArguments()`
+continua disponível em `executePreviewItem`) e localiza o item pelo `id`. Se essa busca lançar
+erro, o usuário recebe a mensagem do próprio erro (`error.auth`, `error.rateLimit`,
+`error.unavailable` ou `error.malformed`). Se ela responder sem o item, a seleção é abortada com
+`error.unavailable`. Em nenhum caminho uma URL de origem não verificada chega à sala.
 
 ## 12. Atribuição exigida
 
