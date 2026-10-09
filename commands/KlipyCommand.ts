@@ -50,15 +50,14 @@ export class KlipyCommand implements ISlashCommand {
         http: IHttp,
         _persis: IPersistence,
     ): Promise<void> {
-        const language = await this.languageOf(context, read);
+        const settings = await readKlipySettings(read);
+        const language = this.languageOf(context, settings.locale);
         const query = normalizeQuery(context.getArguments());
 
         if (!query) {
             await this.notify(modify, context, translate('klipy_usage', language));
             return;
         }
-
-        const settings = await readKlipySettings(read);
 
         if (!settings.apiKey) {
             await this.notify(modify, context, translate('klipy_error_not_configured', language));
@@ -155,8 +154,8 @@ export class KlipyCommand implements ISlashCommand {
         http: IHttp,
         _persis: IPersistence,
     ): Promise<void> {
-        const language = await this.languageOf(context, read);
         const settings = await readKlipySettings(read);
+        const language = this.languageOf(context, settings.locale);
 
         if (!settings.apiKey) {
             await this.notify(modify, context, translate('klipy_error_not_configured', language));
@@ -282,37 +281,14 @@ export class KlipyCommand implements ISlashCommand {
     }
 
     /**
-     * Descobre em que idioma falar com quem executou o comando.
+     * Idioma das mensagens montadas pelo App (ajuda e erros).
      *
-     * `settings.preferences.language` só existe para quem escolheu um idioma
-     * explicitamente no perfil. Quem nunca mexeu nisso — a maioria — tem o campo
-     * vazio, embora veja a interface traduzida: o cliente usa o idioma do navegador,
-     * que o servidor não enxerga. Sem o fallback abaixo, esses usuários recebiam
-     * ajuda e erros em inglês dentro de um Rocket.Chat em português.
-     *
-     * O idioma padrão do workspace é a melhor aproximação disponível no servidor.
+     * `settings.preferences.language` só existe para quem escolheu idioma no perfil.
+     * Para os demais, vale o idioma de busca configurado no App: ler o idioma do
+     * workspace exigiria a permissão `server-setting.read`, que dá acesso a todos os
+     * settings do servidor.
      */
-    private async languageOf(
-        context: SlashCommandContext,
-        read: IRead,
-    ): Promise<SupportedLanguage> {
-        const preference = context.getSender()?.settings?.preferences?.language;
-
-        if (preference) {
-            return resolveLanguage(preference);
-        }
-
-        try {
-            const workspaceLanguage = await read
-                .getEnvironmentReader()
-                .getServerSettings()
-                .getValueById('Language');
-
-            return resolveLanguage(typeof workspaceLanguage === 'string' ? workspaceLanguage : undefined);
-        } catch {
-            // O acessor pode não expor essa configuração em toda versão. Cair no
-            // idioma padrão é melhor do que derrubar o comando.
-            return resolveLanguage(undefined);
-        }
+    private languageOf(context: SlashCommandContext, locale: string): SupportedLanguage {
+        return resolveLanguage(context.getSender()?.settings?.preferences?.language || locale);
     }
 }

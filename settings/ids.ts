@@ -14,7 +14,7 @@ export const CONTENT_FILTER_VALUES = ['off', 'low', 'medium', 'high'] as const;
 export type ContentFilterValue = (typeof CONTENT_FILTER_VALUES)[number];
 
 export const DEFAULT_CONTENT_FILTER: ContentFilterValue = 'medium';
-export const DEFAULT_LOCALE = 'pt_BR';
+export const DEFAULT_LOCALE = 'en_US';
 
 /**
  * Faixa do número de resultados.

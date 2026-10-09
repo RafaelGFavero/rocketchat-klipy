@@ -17,7 +17,7 @@
     "klipy_setting_content_filter_low": "Low",
     "klipy_setting_content_filter_medium": "Medium",
     "klipy_setting_content_filter_off": "Off",
-    "klipy_setting_locale_description": "Language used to interpret searches, as xx or xx_YY (ISO 639-1 plus optional ISO 3166-1 country). Examples: pt_BR, en_US, es.",
+    "klipy_setting_locale_description": "Language used to interpret searches, as xx or xx_YY (ISO 639-1 plus optional ISO 3166-1 country). Examples: en_US, pt_BR, es. Also the language of the app's help and error messages for users who have not chosen a language in their profile.",
     "klipy_setting_locale_label": "Search language",
     "klipy_setting_result_limit_description": "How many GIFs to offer in the preview, from 8 to 10. Rocket.Chat never displays more than 10.",
     "klipy_setting_result_limit_label": "Number of results",

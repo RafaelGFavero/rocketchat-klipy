@@ -61,7 +61,7 @@ export const STRINGS: Record<SupportedLanguage, Record<StringKey, string>> = {
             'Private key issued in the KLIPY Partner Panel (partner.klipy.com). It is stored only in this workspace and never appears in messages or logs.',
         klipy_setting_locale_label: 'Search language',
         klipy_setting_locale_description:
-            'Language used to interpret searches, as xx or xx_YY (ISO 639-1 plus optional ISO 3166-1 country). Examples: pt_BR, en_US, es.',
+            'Language used to interpret searches, as xx or xx_YY (ISO 639-1 plus optional ISO 3166-1 country). Examples: en_US, pt_BR, es. Also the language of the app\'s help and error messages for users who have not chosen a language in their profile.',
         klipy_setting_content_filter_label: 'Content filter',
         klipy_setting_content_filter_description: 'Content safety level applied to search results.',
         klipy_setting_content_filter_off: 'Off',
@@ -96,7 +96,7 @@ export const STRINGS: Record<SupportedLanguage, Record<StringKey, string>> = {
             'Chave privada emitida no Partner Panel do KLIPY (partner.klipy.com). Fica armazenada apenas neste workspace e nunca aparece em mensagens ou logs.',
         klipy_setting_locale_label: 'Idioma da pesquisa',
         klipy_setting_locale_description:
-            'Idioma usado para interpretar as pesquisas, no formato xx ou xx_YY (ISO 639-1 mais país ISO 3166-1 opcional). Exemplos: pt_BR, en_US, es.',
+            'Idioma usado para interpretar as pesquisas, no formato xx ou xx_YY (ISO 639-1 mais país ISO 3166-1 opcional). Exemplos: en_US, pt_BR, es. Também é o idioma das mensagens de ajuda e de erro do App para quem não escolheu idioma no perfil.',
         klipy_setting_content_filter_label: 'Filtro de conteúdo',
         klipy_setting_content_filter_description: 'Nível de segurança de conteúdo aplicado aos resultados.',
         klipy_setting_content_filter_off: 'Desligado',
