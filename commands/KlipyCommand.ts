@@ -243,7 +243,14 @@ export class KlipyCommand implements ISlashCommand {
             builder.setThreadId(threadId);
         }
 
-        await modify.getCreator().finish(builder);
+        try {
+            await modify.getCreator().finish(builder);
+        } catch {
+            // Sala só leitura, usuário silenciado, sala E2E: o motivo é do Rocket.Chat,
+            // não do KLIPY, e a exceção pode trazer detalhe da sala que não vai para log.
+            this.logger?.warn({ app: 'klipy', operation: 'post', error: 'postFailed' });
+            await this.notify(modify, context, translate('klipy_error_post_failed', language));
+        }
     }
 
     /** Mensagem efêmera: só quem executou o comando vê, e nada vai para a sala. */

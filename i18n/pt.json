@@ -6,6 +6,7 @@
     "klipy_error_malformed": "O KLIPY retornou uma resposta inesperada.",
     "klipy_error_no_results": "Nenhum GIF foi encontrado para \"{query}\".",
     "klipy_error_not_configured": "O App KLIPY ainda não foi configurado. Solicite ao administrador que informe a API Key nas configurações do App.",
+    "klipy_error_post_failed": "Não foi possível publicar o GIF nesta sala.",
     "klipy_error_rate_limit": "O limite temporário de consultas ao KLIPY foi atingido. Tente novamente mais tarde.",
     "klipy_error_unavailable": "O serviço de GIFs está temporariamente indisponível.",
     "klipy_preview_title": "Powered by KLIPY",

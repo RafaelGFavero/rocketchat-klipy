@@ -6,6 +6,7 @@
     "klipy_error_malformed": "KLIPY returned an unexpected response.",
     "klipy_error_no_results": "No GIF was found for \"{query}\".",
     "klipy_error_not_configured": "The KLIPY App is not configured yet. Ask an administrator to set the API Key in the App settings.",
+    "klipy_error_post_failed": "The GIF could not be posted in this room.",
     "klipy_error_rate_limit": "The temporary KLIPY request limit was reached. Try again later.",
     "klipy_error_unavailable": "The GIF service is temporarily unavailable.",
     "klipy_preview_title": "Powered by KLIPY",

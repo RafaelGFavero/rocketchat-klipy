@@ -71,7 +71,7 @@ function makeBuilder() {
     return builder;
 }
 
-function makeModify() {
+function makeModify(options: { failFinish?: boolean } = {}) {
     const posted: Array<any> = [];
     const notified: Array<{ user: IUser; message: any }> = [];
     const builders: Array<any> = [];
@@ -88,6 +88,10 @@ function makeModify() {
         getCreator: () => ({
             startMessage: nextBuilder,
             finish: async (builder: any) => {
+                if (options.failFinish) {
+                    throw new Error('error-not-allowed');
+                }
+
                 posted.push(builder.state);
 
                 return 'message-id';
@@ -366,6 +370,17 @@ describe('executor', () => {
 
         expect(JSON.stringify(notified)).not.toContain(API_KEY);
     });
+
+    it('avisa que não conseguiu publicar, sem culpar o KLIPY, quando a sala recusa a mensagem', async () => {
+        const { http } = makeHttp(() => respondWith(200, searchSuccess));
+        const { modify, posted, notified } = makeModify({ failFinish: true });
+
+        await command.executor(makeContext(['festa']), makeRead(), modify, http, persis);
+
+        expect(posted).toHaveLength(0);
+        expect(notified).toHaveLength(1);
+        expect(notified[0].message.text).toBe(STRINGS.pt.klipy_error_post_failed);
+    });
 });
 
 describe('executePreviewItem', () => {
@@ -385,6 +400,17 @@ describe('executePreviewItem', () => {
         expect(calls[0]).toContain('ids=2525964843568523');
         expect(calls[0]).not.toContain('media_filter');
         expect(posted).toHaveLength(1);
+    });
+
+    it('avisa que não conseguiu publicar, sem culpar o KLIPY, quando a sala recusa a mensagem', async () => {
+        const { http } = makeHttp(() => respondWith(200, postsSuccess));
+        const { modify, posted, notified } = makeModify({ failFinish: true });
+
+        await command.executePreviewItem(item, makeContext(['comemoração']), makeRead(), modify, http, persis);
+
+        expect(posted).toHaveLength(0);
+        expect(notified).toHaveLength(1);
+        expect(notified[0].message.text).toBe(STRINGS.pt.klipy_error_post_failed);
     });
 
     it('ignora a URL que veio do cliente e publica a que a API devolveu', async () => {

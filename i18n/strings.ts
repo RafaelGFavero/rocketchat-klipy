@@ -45,7 +45,8 @@ export type StringKey =
     | 'klipy_error_auth'
     | 'klipy_error_rate_limit'
     | 'klipy_error_unavailable'
-    | 'klipy_error_malformed';
+    | 'klipy_error_malformed'
+    | 'klipy_error_post_failed';
 
 export const STRINGS: Record<SupportedLanguage, Record<StringKey, string>> = {
     en: {
@@ -85,6 +86,7 @@ export const STRINGS: Record<SupportedLanguage, Record<StringKey, string>> = {
         klipy_error_rate_limit: 'The temporary KLIPY request limit was reached. Try again later.',
         klipy_error_unavailable: 'The GIF service is temporarily unavailable.',
         klipy_error_malformed: 'KLIPY returned an unexpected response.',
+        klipy_error_post_failed: 'The GIF could not be posted in this room.',
     },
     pt: {
         klipy_command_description: 'Pesquise e compartilhe GIFs do KLIPY. Exemplo: /klipy comemoração',
@@ -120,6 +122,7 @@ export const STRINGS: Record<SupportedLanguage, Record<StringKey, string>> = {
         klipy_error_rate_limit: 'O limite temporário de consultas ao KLIPY foi atingido. Tente novamente mais tarde.',
         klipy_error_unavailable: 'O serviço de GIFs está temporariamente indisponível.',
         klipy_error_malformed: 'O KLIPY retornou uma resposta inesperada.',
+        klipy_error_post_failed: 'Não foi possível publicar o GIF nesta sala.',
     },
 };
 
