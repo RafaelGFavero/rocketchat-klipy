@@ -113,6 +113,12 @@ describe('isSafeHttpsUrl', () => {
         expect(isSafeHttpsUrl('https://static.klipy.com/a\x01b.gif')).toBe(false);
     });
 
+    it('recusa espaço nas pontas e DEL, porque a string publicada é a crua', () => {
+        expect(isSafeHttpsUrl(' https://static.klipy.com/a.gif')).toBe(false);
+        expect(isSafeHttpsUrl('https://static.klipy.com/a.gif\n')).toBe(false);
+        expect(isSafeHttpsUrl('https://static.klipy.com/a\x7fb.gif')).toBe(false);
+    });
+
     it('é imune a maiúsculas no host', () => {
         expect(isSafeHttpsUrl('HTTPS://STATIC.KLIPY.COM/a.gif')).toBe(true);
     });

@@ -44,21 +44,20 @@ export function isSafeHttpsUrl(value: unknown): value is string {
         return false;
     }
 
-    const trimmed = value.trim();
-
-    if (!trimmed || trimmed.length > MAX_URL_LENGTH) {
+    if (!value || value.length > MAX_URL_LENGTH) {
         return false;
     }
 
-    // A string publicada é a crua, e clientes com parser RFC 3986 (iOS, por
-    // exemplo) não tratam `\`, espaço e controle como o `URL` daqui: em
-    // `https://klipy.com\@evil.com` eles leem o host como `evil.com`.
-    if (/[\\\s\x00-\x1f]/.test(trimmed)) {
+    // A string publicada é esta, crua, então é ela que se testa, sem trim.
+    // Clientes com parser RFC 3986 (iOS, por exemplo) leem `\` diferente do `URL`
+    // daqui: em `https://klipy.com\@evil.com` o host deles é `evil.com`. Espaço,
+    // controle e DEL saem por precaução: o que é publicado tem de ser o validado.
+    if (/[\\\s\x00-\x1f\x7f]/.test(value)) {
         return false;
     }
 
     try {
-        const parsed = new URL(trimmed);
+        const parsed = new URL(value);
         const host = parsed.hostname;
 
         return parsed.protocol === 'https:' && (host === 'klipy.com' || host.endsWith('.klipy.com'));
