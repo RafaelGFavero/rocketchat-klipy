@@ -84,10 +84,6 @@ export class KlipyError extends Error {
  * Tudo é `unknown` de propósito: a resposta vem da rede e não há garantia
  * nenhuma de tipo. A normalização em `utils/media.ts` faz a verificação.
  */
-export interface KlipyRawMediaObject {
-    url?: unknown;
-}
-
 export interface KlipyRawResponseObject {
     id?: unknown;
     title?: unknown;

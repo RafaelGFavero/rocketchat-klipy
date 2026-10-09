@@ -135,7 +135,7 @@ const APP_FILES = ['app.json', 'icon.png', 'KlipyApp.ts', 'LICENSE'];
  * depende de `undici-types`, a resolução transitiva falhou no ambiente deles e a
  * revisão voltou com cinco erros de compilação.
  *
- * Aqui fica só o que é necessário para compilar o App, com versões exatas.
+ * Aqui fica só o que é necessário para compilar o App, com o compilador em versões exatas (ver COMPILER_PINS).
  */
 function buildManifest(source) {
     return {

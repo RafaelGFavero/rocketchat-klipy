@@ -1,6 +1,5 @@
 import {
     KlipyGif,
-    KlipyRawMediaObject,
     KlipyRawResponseObject,
     PREVIEW_FORMAT_ORDER,
     SEND_FORMAT_ORDER,
@@ -23,9 +22,10 @@ export function pickFormatUrl(
 
     for (const format of order) {
         const candidate = mediaFormats[format];
+        const url = isPlainObject(candidate) ? candidate.url : undefined;
 
-        if (isPlainObject(candidate) && isSafeHttpsUrl((candidate as KlipyRawMediaObject).url)) {
-            return (candidate as KlipyRawMediaObject).url as string;
+        if (isSafeHttpsUrl(url)) {
+            return url;
         }
     }
 
