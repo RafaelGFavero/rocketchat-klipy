@@ -50,6 +50,13 @@ export function isSafeHttpsUrl(value: unknown): value is string {
         return false;
     }
 
+    // A string publicada é a crua, e clientes com parser RFC 3986 (iOS, por
+    // exemplo) não tratam `\`, espaço e controle como o `URL` daqui: em
+    // `https://klipy.com\@evil.com` eles leem o host como `evil.com`.
+    if (/[\\\s\x00-\x1f]/.test(trimmed)) {
+        return false;
+    }
+
     try {
         const parsed = new URL(trimmed);
         const host = parsed.hostname;

@@ -102,6 +102,24 @@ describe('isSafeHttpsUrl', () => {
         expect(isSafeHttpsUrl('https://klipy.com/gifs/festa-123')).toBe(true);
         expect(isSafeHttpsUrl('https://static2.klipy.com/ii/a.gif')).toBe(true);
     });
+
+    it('recusa barra invertida, que outro parser lê como host diferente', () => {
+        expect(isSafeHttpsUrl('https://klipy.com\\@evil.com/a.gif')).toBe(false);
+    });
+
+    it('recusa espaço, tab ou caractere de controle dentro da URL', () => {
+        expect(isSafeHttpsUrl('https://static.klipy.com/a b.gif')).toBe(false);
+        expect(isSafeHttpsUrl('https://static.klipy.com/a\tb.gif')).toBe(false);
+        expect(isSafeHttpsUrl('https://static.klipy.com/a\x01b.gif')).toBe(false);
+    });
+
+    it('é imune a maiúsculas no host', () => {
+        expect(isSafeHttpsUrl('HTTPS://STATIC.KLIPY.COM/a.gif')).toBe(true);
+    });
+
+    it('recusa host com ponto final', () => {
+        expect(isSafeHttpsUrl('https://static.klipy.com./a.gif')).toBe(false);
+    });
 });
 
 describe('clampResultLimit', () => {
