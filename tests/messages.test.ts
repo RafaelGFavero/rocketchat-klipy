@@ -8,8 +8,6 @@ const gif: KlipyGif = {
     previewUrl: 'https://static.klipy.com/tiny.gif',
     gifUrl: 'https://static.klipy.com/full.gif',
     pageUrl: 'https://klipy.com/gifs/excited-im-so-excited-22',
-    width: 498,
-    height: 281,
 };
 
 const defaults = { language: 'pt' as const, showTitle: true, showAttributionLink: true };

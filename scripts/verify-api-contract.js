@@ -95,6 +95,17 @@ async function call(url, label) {
     }
 }
 
+/** Regra de host de isSafeHttpsUrl (utils/validation.ts): klipy.com ou subdomínio. */
+function isKlipyHttpsUrl(url) {
+    try {
+        const { protocol, hostname } = new URL(url);
+
+        return protocol === 'https:' && (hostname === 'klipy.com' || hostname.endsWith('.klipy.com'));
+    } catch {
+        return false;
+    }
+}
+
 function inspectItem(item, label) {
     check(item.id !== undefined, `${label}: tem id`, `tipo ${typeof item.id}`);
     check('title' in item, `${label}: tem title`);
@@ -127,8 +138,8 @@ function inspectItem(item, label) {
         const media = item.media_formats[name];
 
         check(
-            typeof media?.url === 'string' && media.url.startsWith('https://'),
-            `${label}.${name}: url HTTPS`,
+            typeof media?.url === 'string' && isKlipyHttpsUrl(media.url),
+            `${label}.${name}: url HTTPS em klipy.com`,
         );
         check(
             Array.isArray(media?.dims) && media.dims.length === 2,

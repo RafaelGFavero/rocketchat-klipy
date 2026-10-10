@@ -33,26 +33,34 @@ export function normalizeQuery(args?: Array<string> | string): string {
 }
 
 /**
- * Só aceita URL HTTPS bem formada e de tamanho razoável.
+ * Só aceita URL HTTPS bem formada, de tamanho razoável e do domínio do KLIPY.
  *
- * Isto é a barreira contra `javascript:`, `data:` e `file:` chegarem a um
- * `imageUrl` de mensagem. Aplica-se a **toda** URL vinda da API, sem exceção.
+ * Toda URL que passa aqui veio da API e vai parar em `imageUrl` ou em link de
+ * mensagem, carregada pelo cliente de cada membro da sala. Barra `javascript:`,
+ * `data:`, `file:` e qualquer host fora de `klipy.com`.
  */
 export function isSafeHttpsUrl(value: unknown): value is string {
     if (typeof value !== 'string') {
         return false;
     }
 
-    const trimmed = value.trim();
+    if (!value || value.length > MAX_URL_LENGTH) {
+        return false;
+    }
 
-    if (!trimmed || trimmed.length > MAX_URL_LENGTH) {
+    // A string publicada é esta, crua, então é ela que se testa, sem trim.
+    // Clientes com parser RFC 3986 podem ler `\` diferente do `URL` daqui: em
+    // `https://klipy.com\@evil.com` o host deles pode ser `evil.com`. Espaço,
+    // controle e DEL saem por precaução: o que é publicado tem de ser o validado.
+    if (/[\\\s\x00-\x1f\x7f]/.test(value)) {
         return false;
     }
 
     try {
-        const parsed = new URL(trimmed);
+        const parsed = new URL(value);
+        const host = parsed.hostname;
 
-        return parsed.protocol === 'https:' && parsed.hostname.length > 0;
+        return parsed.protocol === 'https:' && (host === 'klipy.com' || host.endsWith('.klipy.com'));
     } catch {
         return false;
     }

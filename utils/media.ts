@@ -1,42 +1,10 @@
 import {
     KlipyGif,
-    KlipyRawMediaObject,
     KlipyRawResponseObject,
     PREVIEW_FORMAT_ORDER,
     SEND_FORMAT_ORDER,
 } from '../types/klipy';
 import { isPlainObject, isSafeHttpsUrl, truncateTitle } from './validation';
-
-export interface PickedMedia {
-    url: string;
-    width?: number;
-    height?: number;
-}
-
-/**
- * `dims` é uma tupla `[largura, altura]` na camada compatível com Tenor
- * — e não um par de campos, como na API nativa. Ver docs/api-contract.md §7.3.
- */
-function extractDims(dims: unknown): { width?: number; height?: number } {
-    if (!Array.isArray(dims) || dims.length < 2) {
-        return {};
-    }
-
-    const [width, height] = dims;
-
-    if (
-        typeof width !== 'number' ||
-        typeof height !== 'number' ||
-        !Number.isFinite(width) ||
-        !Number.isFinite(height) ||
-        width <= 0 ||
-        height <= 0
-    ) {
-        return {};
-    }
-
-    return { width, height };
-}
 
 /**
  * Percorre a ordem de preferência e devolve o primeiro formato com URL utilizável.
@@ -47,25 +15,18 @@ function extractDims(dims: unknown): { width?: number; height?: number } {
 export function pickFormatUrl(
     mediaFormats: unknown,
     order: ReadonlyArray<string>,
-): PickedMedia | undefined {
+): string | undefined {
     if (!isPlainObject(mediaFormats)) {
         return undefined;
     }
 
     for (const format of order) {
         const candidate = mediaFormats[format];
+        const url = isPlainObject(candidate) ? candidate.url : undefined;
 
-        if (!isPlainObject(candidate)) {
-            continue;
+        if (isSafeHttpsUrl(url)) {
+            return url;
         }
-
-        const { url, dims } = candidate as KlipyRawMediaObject;
-
-        if (!isSafeHttpsUrl(url)) {
-            continue;
-        }
-
-        return { url, ...extractDims(dims) };
     }
 
     return undefined;
@@ -113,20 +74,12 @@ export function normalizeItem(raw: unknown): KlipyGif | undefined {
     const gif: KlipyGif = {
         id,
         title: truncateTitle(item.title) || truncateTitle(item.content_description),
-        previewUrl: preview.url,
-        gifUrl: send.url,
+        previewUrl: preview,
+        gifUrl: send,
     };
 
     if (isSafeHttpsUrl(item.itemurl)) {
         gif.pageUrl = item.itemurl;
-    }
-
-    if (send.width !== undefined) {
-        gif.width = send.width;
-    }
-
-    if (send.height !== undefined) {
-        gif.height = send.height;
     }
 
     return gif;

@@ -8,6 +8,7 @@ import { SlashCommandContext, SlashCommandPreviewItemType } from '@rocket.chat/a
 
 import { SupportedLanguage, StringKey, resolveLanguage, translate } from '../i18n/strings';
 import { readKlipySettings } from '../settings/registerSettings';
+import type { KlipyRuntimeSettings } from '../settings/registerSettings';
 import { KlipyClient } from '../services/KlipyClient';
 import { KlipyError, KlipyErrorKind, KlipyGif } from '../types/klipy';
 import { buildGifAttachment } from '../utils/messages';
@@ -50,7 +51,8 @@ export class KlipyCommand implements ISlashCommand {
         http: IHttp,
         _persis: IPersistence,
     ): Promise<void> {
-        const language = await this.languageOf(context, read);
+        const settings = await readKlipySettings(read);
+        const language = this.languageOf(context, settings.locale);
         const query = normalizeQuery(context.getArguments());
 
         if (!query) {
@@ -58,21 +60,13 @@ export class KlipyCommand implements ISlashCommand {
             return;
         }
 
-        const settings = await readKlipySettings(read);
-
         if (!settings.apiKey) {
             await this.notify(modify, context, translate('klipy_error_not_configured', language));
             return;
         }
 
         try {
-            const { items } = await new KlipyClient(http, this.logger).search({
-                query,
-                apiKey: settings.apiKey,
-                locale: settings.locale,
-                contentFilter: settings.contentFilter,
-                limit: settings.resultLimit,
-            });
+            const items = await new KlipyClient(http, this.logger).search(query, settings);
 
             if (!items.length) {
                 await this.notify(
@@ -117,13 +111,7 @@ export class KlipyCommand implements ISlashCommand {
         }
 
         try {
-            const { items } = await new KlipyClient(http, this.logger).search({
-                query,
-                apiKey: settings.apiKey,
-                locale: settings.locale,
-                contentFilter: settings.contentFilter,
-                limit: settings.resultLimit,
-            });
+            const items = await new KlipyClient(http, this.logger).search(query, settings);
 
             return {
                 i18nTitle: 'klipy_preview_title',
@@ -155,8 +143,8 @@ export class KlipyCommand implements ISlashCommand {
         http: IHttp,
         _persis: IPersistence,
     ): Promise<void> {
-        const language = await this.languageOf(context, read);
         const settings = await readKlipySettings(read);
+        const language = this.languageOf(context, settings.locale);
 
         if (!settings.apiKey) {
             await this.notify(modify, context, translate('klipy_error_not_configured', language));
@@ -173,7 +161,7 @@ export class KlipyCommand implements ISlashCommand {
         const client = new KlipyClient(http, this.logger);
 
         try {
-            const gif = await this.resolveSelectedGif(client, context, settings.apiKey, id, settings);
+            const gif = await this.resolveSelectedGif(client, context, id, settings);
 
             if (!gif) {
                 await this.notify(modify, context, translate('klipy_error_unavailable', language));
@@ -196,11 +184,10 @@ export class KlipyCommand implements ISlashCommand {
     private async resolveSelectedGif(
         client: KlipyClient,
         context: SlashCommandContext,
-        apiKey: string,
         id: string,
-        settings: { locale: string; contentFilter: string; resultLimit: number },
+        settings: KlipyRuntimeSettings,
     ): Promise<KlipyGif | undefined> {
-        const direct = await client.getById({ id, apiKey });
+        const direct = await client.getById({ id, apiKey: settings.apiKey });
 
         if (direct) {
             return direct;
@@ -212,13 +199,7 @@ export class KlipyCommand implements ISlashCommand {
             return undefined;
         }
 
-        const { items } = await client.search({
-            query,
-            apiKey,
-            locale: settings.locale,
-            contentFilter: settings.contentFilter,
-            limit: settings.resultLimit,
-        });
+        const items = await client.search(query, settings);
 
         return items.find((candidate) => candidate.id === id);
     }
@@ -244,7 +225,14 @@ export class KlipyCommand implements ISlashCommand {
             builder.setThreadId(threadId);
         }
 
-        await modify.getCreator().finish(builder);
+        try {
+            await modify.getCreator().finish(builder);
+        } catch {
+            // Sala só leitura, usuário silenciado, sala E2E: o motivo é do Rocket.Chat,
+            // não do KLIPY, e a exceção pode trazer detalhe da sala que não vai para log.
+            this.logger?.warn({ app: 'klipy', operation: 'post', error: 'postFailed' });
+            await this.notify(modify, context, translate('klipy_error_post_failed', language));
+        }
     }
 
     /** Mensagem efêmera: só quem executou o comando vê, e nada vai para a sala. */
@@ -282,37 +270,14 @@ export class KlipyCommand implements ISlashCommand {
     }
 
     /**
-     * Descobre em que idioma falar com quem executou o comando.
+     * Idioma das mensagens montadas pelo App (ajuda e erros).
      *
-     * `settings.preferences.language` só existe para quem escolheu um idioma
-     * explicitamente no perfil. Quem nunca mexeu nisso — a maioria — tem o campo
-     * vazio, embora veja a interface traduzida: o cliente usa o idioma do navegador,
-     * que o servidor não enxerga. Sem o fallback abaixo, esses usuários recebiam
-     * ajuda e erros em inglês dentro de um Rocket.Chat em português.
-     *
-     * O idioma padrão do workspace é a melhor aproximação disponível no servidor.
+     * `settings.preferences.language` só existe para quem escolheu idioma no perfil.
+     * Para os demais, vale o idioma de busca configurado no App: ler o idioma do
+     * workspace exigiria a permissão `server-setting.read`, que dá acesso a todos os
+     * settings do servidor.
      */
-    private async languageOf(
-        context: SlashCommandContext,
-        read: IRead,
-    ): Promise<SupportedLanguage> {
-        const preference = context.getSender()?.settings?.preferences?.language;
-
-        if (preference) {
-            return resolveLanguage(preference);
-        }
-
-        try {
-            const workspaceLanguage = await read
-                .getEnvironmentReader()
-                .getServerSettings()
-                .getValueById('Language');
-
-            return resolveLanguage(typeof workspaceLanguage === 'string' ? workspaceLanguage : undefined);
-        } catch {
-            // O acessor pode não expor essa configuração em toda versão. Cair no
-            // idioma padrão é melhor do que derrubar o comando.
-            return resolveLanguage(undefined);
-        }
+    private languageOf(context: SlashCommandContext, locale: string): SupportedLanguage {
+        return resolveLanguage(context.getSender()?.settings?.preferences?.language || locale);
     }
 }

@@ -82,7 +82,7 @@ persistida pelo App, nunca é escrita em log e nunca aparece em mensagem de erro
 | `key` | sim | setting `klipy_api_key` | |
 | `q` | sim | termo do usuário, `encodeURIComponent` | máx. 100 caracteres (`MAX_QUERY_LENGTH`) |
 | `limit` | não | setting `klipy_result_limit` (8–10, default 10) | API aceita até 50; o teto real é 10 (ver §6) |
-| `locale` | não | setting `klipy_locale` (default `pt_BR`) | `xx` ou `xx_YY`; validado por regex |
+| `locale` | não | setting `klipy_locale` (default `en_US`) | `xx` ou `xx_YY`; validado por regex |
 | `contentfilter` | não | setting `klipy_content_filter` (default `medium`) | `off\|low\|medium\|high` |
 | `media_filter` | não | `nanogif,tinygif,mediumgif,gif` | fixo no código |
 | `country` | não | **não enviado** | derivável de `locale`; omitido para não enviar dado extra |
@@ -216,8 +216,7 @@ conforme o handoff (GIF animado está disponível, então não há motivo para c
 | Título | `title` → `content_description` | string vazia |
 | Thumbnail do preview | `media_formats.tinygif.url` | `nanogif` → `mediumgif` → `gif` |
 | GIF publicado | `media_formats.gif.url` | `mediumgif` → `tinygif` → `nanogif` |
-| Página do item | `itemurl` | omitido se ausente ou não-HTTPS |
-| Dimensões | `dims[0]`, `dims[1]` | omitidas se ausentes |
+| Página do item | `itemurl` | omitido se ausente ou se não passar em `isSafeHttpsUrl()` (§9) |
 
 A ordem de fallback do preview começa em `tinygif` (220 px) e não em `nanogif` (90 px): 90 px fica
 ilegível na galeria de preview do Rocket.Chat. `nanogif` continua como primeiro fallback.
@@ -231,7 +230,13 @@ utilizável para *ambos* os papéis (preview e envio) são descartados.
 
 - protocolo obrigatoriamente `https:` — `http:`, `javascript:`, `data:`, `file:` e qualquer outro
   esquema são rejeitados;
-- host não vazio;
+- host `klipy.com` ou um subdomínio dele (`static.klipy.com`, por exemplo); qualquer outro host
+  é rejeitado;
+- nenhuma barra invertida na URL. O `URL` (WHATWG) do servidor e clientes com parser RFC 3986
+  podem ler essa URL de formas diferentes: em `https://klipy.com\@evil.com`, o servidor vê o
+  host `klipy.com`, e esses clientes podem ver `evil.com`;
+- nenhum espaço, caractere de controle ASCII ou DEL em posição alguma da string, nem nas pontas.
+  É precaução: a string publicada é a crua, então tem de ser exatamente a validada;
 - comprimento máximo de 2048 caracteres.
 
 `sanitizeUrlForLog()` substitui o valor de `key` por `***` antes de qualquer log.
@@ -256,9 +261,9 @@ Limites publicados pelo KLIPY:
 - **Chave de teste:** até **100 requisições por hora**.
 - **Chave de produção:** sem limite, liberada mediante solicitação no Partner Panel.
 
-Cada `/klipy <termo>` consome **2 requisições** (uma no preview, uma na confirmação da seleção — §11),
-ou **1** se o usuário não selecionar nada. Com chave de teste isso dá ~50 envios completos por hora
-por workspace.
+Cada GIF enviado consome **pelo menos 2 requisições**: uma ou mais buscas do preview enquanto o
+usuário digita, e mais uma no envio (a confirmação da seleção, §11, ou a busca do `executor` quando o
+usuário confirma sem escolher). Com chave de teste isso dá menos de 50 envios por hora por workspace.
 
 ## 11. Estratégia de seleção segura
 
@@ -269,12 +274,15 @@ handoff:
 1. o preview guarda em `value` a URL do thumbnail (o Rocket.Chat precisa dela para renderizar) e em
    `id` o identificador KLIPY;
 2. ao selecionar, o App **ignora o `value` recebido** e faz `GET /v2/posts?ids=<id>`;
-3. a URL publicada é a que a API acabou de devolver, validada por `isSafeHttpsUrl()`.
+3. a URL publicada é a que a API acabou de devolver, validada por `isSafeHttpsUrl()` (HTTPS e
+   domínio `klipy.com`).
 
-Se `/v2/posts` falhar ou não devolver o item, o App refaz a busca original (`context.getArguments()`
-continua disponível em `executePreviewItem`) e localiza o item pelo `id`. Só se ambos falharem a
-seleção é abortada com `error.unavailable`. Em nenhum caminho uma URL de origem não verificada
-chega à sala.
+Se `/v2/posts` não devolver o item (um erro de rede, de status ou uma resposta malformada é
+reportado ao usuário, sem nova tentativa), o App refaz a busca original (`context.getArguments()`
+continua disponível em `executePreviewItem`) e localiza o item pelo `id`. Se essa busca lançar
+erro, o usuário recebe a mensagem do próprio erro (`error.auth`, `error.rateLimit`,
+`error.unavailable` ou `error.malformed`). Se ela responder sem o item, a seleção é abortada com
+`error.unavailable`. Em nenhum caminho uma URL de origem não verificada chega à sala.
 
 ## 12. Atribuição exigida
 

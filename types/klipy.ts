@@ -18,33 +18,11 @@ export interface KlipyGif {
     gifUrl: string;
     /** Página do item no site do KLIPY, quando disponível. */
     pageUrl?: string;
-    width?: number;
-    height?: number;
-}
-
-export interface KlipySearchOptions {
-    query: string;
-    apiKey: string;
-    locale: string;
-    contentFilter: string;
-    limit: number;
 }
 
 export interface KlipyLookupOptions {
     id: string;
     apiKey: string;
-}
-
-export interface KlipySearchResult {
-    items: Array<KlipyGif>;
-    /** Cursor de paginação devolvido pelo KLIPY. Não usado no MVP. */
-    next?: string;
-}
-
-export interface IKlipyClient {
-    search(options: KlipySearchOptions): Promise<KlipySearchResult>;
-    /** Re-consulta um item pelo id. Base da estratégia de seleção segura. */
-    getById(options: KlipyLookupOptions): Promise<KlipyGif | undefined>;
 }
 
 /**
@@ -86,14 +64,6 @@ export class KlipyError extends Error {
  * Tudo é `unknown` de propósito: a resposta vem da rede e não há garantia
  * nenhuma de tipo. A normalização em `utils/media.ts` faz a verificação.
  */
-export interface KlipyRawMediaObject {
-    url?: unknown;
-    dims?: unknown;
-    size?: unknown;
-    duration?: unknown;
-    preview?: unknown;
-}
-
 export interface KlipyRawResponseObject {
     id?: unknown;
     title?: unknown;
@@ -104,11 +74,7 @@ export interface KlipyRawResponseObject {
 
 export interface KlipyRawEnvelope {
     results?: unknown;
-    next?: unknown;
 }
-
-/** Formatos de GIF animado, do maior para o menor. Ver docs/api-contract.md §7.3. */
-export const GIF_FORMATS_LARGEST_FIRST = ['gif', 'mediumgif', 'tinygif', 'nanogif'] as const;
 
 /**
  * Ordem de escolha da miniatura do preview.

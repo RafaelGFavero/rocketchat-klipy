@@ -1,4 +1,4 @@
-import type { IHttp, IHttpResponse, IModify, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import type { IHttp, IHttpResponse, ILogger, IModify, IRead } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IMessage, IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
@@ -30,7 +30,7 @@ function makeContext(args: Array<string>, language = 'pt-BR', threadId?: string)
     return new SlashCommandContext(makeUser(language), room, args, threadId);
 }
 
-function makeRead(overrides: Record<string, unknown> = {}, workspaceLanguage = 'en'): IRead {
+function makeRead(overrides: Record<string, unknown> = {}): IRead {
     const values: Record<string, unknown> = {
         [KlipySettingId.ApiKey]: API_KEY,
         [KlipySettingId.Locale]: 'pt_BR',
@@ -44,9 +44,6 @@ function makeRead(overrides: Record<string, unknown> = {}, workspaceLanguage = '
     return {
         getEnvironmentReader: () => ({
             getSettings: () => ({ getValueById: async (id: string) => values[id] }),
-            getServerSettings: () => ({
-                getValueById: async (id: string) => (id === 'Language' ? workspaceLanguage : undefined),
-            }),
         }),
     } as unknown as IRead;
 }
@@ -74,7 +71,7 @@ function makeBuilder() {
     return builder;
 }
 
-function makeModify() {
+function makeModify(options: { failFinish?: boolean } = {}) {
     const posted: Array<any> = [];
     const notified: Array<{ user: IUser; message: any }> = [];
     const builders: Array<any> = [];
@@ -91,6 +88,10 @@ function makeModify() {
         getCreator: () => ({
             startMessage: nextBuilder,
             finish: async (builder: any) => {
+                if (options.failFinish) {
+                    throw new Error('error-not-allowed');
+                }
+
                 posted.push(builder.state);
 
                 return 'message-id';
@@ -234,17 +235,16 @@ describe('executor', () => {
         expect(notified[0].message.text).toBe(STRINGS.en.klipy_usage);
     });
 
-    it('usa o idioma do workspace quando o usuário não escolheu nenhum', async () => {
-        // Regressão de um bug visto só em servidor real: a maioria dos usuários nunca
-        // define idioma no perfil, então `preferences.language` vem vazio. O cliente
-        // mostra a interface traduzida pelo idioma do navegador, que o servidor não
-        // enxerga — e as mensagens do App saíam em inglês num Rocket.Chat português.
+    it('usa o idioma de busca do App quando o usuário não escolheu nenhum', async () => {
+        // Regressão: a 0.1.0 lia o setting `Language` do servidor, leitura que o
+        // Apps-Engine nega sem a permissão `server-setting.read`. A mensagem caía
+        // em inglês num Rocket.Chat em português, e o mock antigo não mostrava isso.
         const { http } = makeHttp(() => respondWith(200, searchSuccess));
         const { modify, notified } = makeModify();
 
         await command.executor(
             new SlashCommandContext(makeUser(undefined), room, []),
-            makeRead({}, 'pt-BR'),
+            makeRead({ [KlipySettingId.Locale]: 'pt_BR' }),
             modify,
             http,
             persis,
@@ -253,22 +253,28 @@ describe('executor', () => {
         expect(notified[0].message.text).toBe(STRINGS.pt.klipy_usage);
     });
 
-    it('a preferência do usuário vence o idioma do workspace', async () => {
+    it('a preferência do usuário vence o idioma de busca', async () => {
         const { http } = makeHttp(() => respondWith(200, searchSuccess));
         const { modify, notified } = makeModify();
 
-        await command.executor(makeContext([], 'en-US'), makeRead({}, 'pt-BR'), modify, http, persis);
+        await command.executor(
+            makeContext([], 'en-US'),
+            makeRead({ [KlipySettingId.Locale]: 'pt_BR' }),
+            modify,
+            http,
+            persis,
+        );
 
         expect(notified[0].message.text).toBe(STRINGS.en.klipy_usage);
     });
 
-    it('cai no idioma padrão quando nem o usuário nem o workspace informam', async () => {
+    it('fala inglês com o idioma de busca padrão', async () => {
         const { http } = makeHttp(() => respondWith(200, searchSuccess));
         const { modify, notified } = makeModify();
 
         await command.executor(
             new SlashCommandContext(makeUser(undefined), room, []),
-            makeRead({}, ''),
+            makeRead({ [KlipySettingId.Locale]: undefined }),
             modify,
             http,
             persis,
@@ -364,6 +370,35 @@ describe('executor', () => {
 
         expect(JSON.stringify(notified)).not.toContain(API_KEY);
     });
+
+    it('avisa que não conseguiu publicar, sem culpar o KLIPY, quando a sala recusa a mensagem', async () => {
+        const { http } = makeHttp(() => respondWith(200, searchSuccess));
+        const { modify, posted, notified } = makeModify({ failFinish: true });
+
+        await command.executor(makeContext(['festa']), makeRead(), modify, http, persis);
+
+        expect(posted).toHaveLength(0);
+        expect(notified).toHaveLength(1);
+        expect(notified[0].message.text).toBe(STRINGS.pt.klipy_error_post_failed);
+    });
+
+    it('registra a recusa só com a operação e a categoria do erro', async () => {
+        // PRIVACY.md promete isso: a exceção do Rocket.Chat pode trazer detalhe da sala.
+        const logger = {
+            debug: jest.fn(),
+            info: jest.fn(),
+            log: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+        } as unknown as ILogger;
+        const { http } = makeHttp(() => respondWith(200, searchSuccess));
+        const { modify } = makeModify({ failFinish: true });
+
+        await new KlipyCommand(logger).executor(makeContext(['festa']), makeRead(), modify, http, persis);
+
+        expect(logger.warn).toHaveBeenCalledTimes(1);
+        expect(logger.warn).toHaveBeenCalledWith({ app: 'klipy', operation: 'post', error: 'postFailed' });
+    });
 });
 
 describe('executePreviewItem', () => {
@@ -383,6 +418,17 @@ describe('executePreviewItem', () => {
         expect(calls[0]).toContain('ids=2525964843568523');
         expect(calls[0]).not.toContain('media_filter');
         expect(posted).toHaveLength(1);
+    });
+
+    it('avisa que não conseguiu publicar, sem culpar o KLIPY, quando a sala recusa a mensagem', async () => {
+        const { http } = makeHttp(() => respondWith(200, postsSuccess));
+        const { modify, posted, notified } = makeModify({ failFinish: true });
+
+        await command.executePreviewItem(item, makeContext(['comemoração']), makeRead(), modify, http, persis);
+
+        expect(posted).toHaveLength(0);
+        expect(notified).toHaveLength(1);
+        expect(notified[0].message.text).toBe(STRINGS.pt.klipy_error_post_failed);
     });
 
     it('ignora a URL que veio do cliente e publica a que a API devolveu', async () => {
@@ -449,6 +495,24 @@ describe('executePreviewItem', () => {
 
         expect(calls).toHaveLength(0);
         expect(posted).toHaveLength(0);
+    });
+
+    it('usa o idioma de busca do App quando o usuário não escolheu nenhum', async () => {
+        const { http, calls } = makeHttp(() => respondWith(200, postsSuccess));
+        const { modify, posted, notified } = makeModify();
+
+        await command.executePreviewItem(
+            { ...item, id: '' },
+            new SlashCommandContext(makeUser(undefined), room, ['festa']),
+            makeRead({ [KlipySettingId.Locale]: 'pt_BR' }),
+            modify,
+            http,
+            persis,
+        );
+
+        expect(calls).toHaveLength(0);
+        expect(posted).toHaveLength(0);
+        expect(notified[0].message.text).toBe(STRINGS.pt.klipy_error_unavailable);
     });
 
     it('inclui a atribuição na mensagem publicada', async () => {

@@ -1,6 +1,6 @@
 {
     "name": "klipy-gifs",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Third-party Rocket.Chat App that searches and shares GIFs from the KLIPY API.",
     "private": true,
     "license": "MIT",

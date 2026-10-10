@@ -3,6 +3,7 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
 
 import {
+    CONTENT_FILTER_VALUES,
     ContentFilterValue,
     DEFAULT_CONTENT_FILTER,
     DEFAULT_LOCALE,
@@ -46,12 +47,7 @@ export const SETTINGS: Array<ISetting> = [
         i18nLabel: 'klipy_setting_content_filter_label',
         i18nDescription: 'klipy_setting_content_filter_description',
         // As chaves são exatamente os valores que `/v2/search` aceita em `contentfilter`.
-        values: [
-            { key: 'off', i18nLabel: 'klipy_setting_content_filter_off' },
-            { key: 'low', i18nLabel: 'klipy_setting_content_filter_low' },
-            { key: 'medium', i18nLabel: 'klipy_setting_content_filter_medium' },
-            { key: 'high', i18nLabel: 'klipy_setting_content_filter_high' },
-        ],
+        values: CONTENT_FILTER_VALUES.map((key) => ({ key, i18nLabel: `klipy_setting_content_filter_${key}` })),
     },
     {
         id: KlipySettingId.ResultLimit,

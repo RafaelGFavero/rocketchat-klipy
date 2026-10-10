@@ -4,15 +4,13 @@ import {
     HTTP_TIMEOUT_MS,
     KLIPY_API_BASE_URL,
 } from '../settings/ids';
+import type { KlipyRuntimeSettings } from '../settings/registerSettings';
 import {
-    IKlipyClient,
     KlipyError,
     KlipyErrorKind,
     KlipyGif,
     KlipyLookupOptions,
     KlipyRawEnvelope,
-    KlipySearchOptions,
-    KlipySearchResult,
     SEARCH_MEDIA_FILTER,
 } from '../types/klipy';
 import { normalizeResults } from '../utils/media';
@@ -72,31 +70,31 @@ function parseBody(response: IHttpResponse): unknown {
  *
  * É o único ponto do App que conhece o formato da API. Todo o resto recebe `KlipyGif`.
  */
-export class KlipyClient implements IKlipyClient {
+export class KlipyClient {
     constructor(
         private readonly http: IHttp,
         private readonly logger?: ILogger,
     ) {}
 
-    public async search(options: KlipySearchOptions): Promise<KlipySearchResult> {
-        const apiKey = this.requireApiKey(options.apiKey);
-        const limit = clampResultLimit(options.limit);
+    public async search(
+        query: string,
+        settings: Pick<KlipyRuntimeSettings, 'apiKey' | 'locale' | 'contentFilter' | 'resultLimit'>,
+    ): Promise<Array<KlipyGif>> {
+        const apiKey = this.requireApiKey(settings.apiKey);
+        const limit = clampResultLimit(settings.resultLimit);
 
         const url = buildUrl('/v2/search', {
             key: apiKey,
-            q: options.query,
+            q: query,
             limit: String(limit),
-            locale: normalizeLocale(options.locale),
-            contentfilter: normalizeContentFilter(options.contentFilter),
+            locale: normalizeLocale(settings.locale),
+            contentfilter: normalizeContentFilter(settings.contentFilter),
             media_filter: SEARCH_MEDIA_FILTER,
         });
 
         const envelope = await this.request(url, 'search');
 
-        return {
-            items: normalizeResults(envelope.results, limit),
-            next: typeof envelope.next === 'string' && envelope.next ? envelope.next : undefined,
-        };
+        return normalizeResults(envelope.results, limit);
     }
 
     /**

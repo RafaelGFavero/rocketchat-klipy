@@ -57,8 +57,12 @@ O que o App faz para reduzir superfície de ataque:
 
 **URLs vindas da API**
 
-- Toda URL de mídia passa por `isSafeHttpsUrl()`: só HTTPS, com host válido e até 2048
-  caracteres. `http:`, `javascript:`, `data:` e `file:` são rejeitados.
+- Toda URL de mídia, e o link do título, passa por `isSafeHttpsUrl()`: só HTTPS, host
+  `klipy.com` ou subdomínio dele, e até 2048 caracteres. `http:`, `javascript:`, `data:`,
+  `file:` e qualquer outro host são rejeitados. URL com barra invertida também, porque o
+  parser de alguns clientes lê nela outro host. Espaço, caractere de controle e DEL, em
+  qualquer posição, são rejeitados por precaução: a string publicada tem de ser
+  exatamente a validada.
 - Um formato com URL insegura é pulado, e o App usa o próximo formato disponível.
 - Itens sem nenhuma mídia utilizável são descartados em vez de publicados pela metade.
 

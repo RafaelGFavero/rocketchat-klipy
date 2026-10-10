@@ -35,7 +35,7 @@ permanente, para uso em escala limitada. É exatamente o caso de um workspace de
 1. Crie a conta em <https://cloud.rocket.chat/register> (a mesma que o Publisher Portal
    vai exigir depois, então não é trabalho jogado fora).
 2. Crie um workspace no plano Starter.
-3. Siga o caminho 2 abaixo, subindo `dist/klipy-gifs_0.1.0.zip`.
+3. Siga o caminho 2 abaixo, subindo `dist/klipy-gifs_0.1.1.zip`.
 4. Rode [manual-test-plan.md](manual-test-plan.md).
 
 > Anote a versão do Rocket.Chat e do Apps-Engine do workspace criado — é o que preenche
@@ -72,7 +72,7 @@ npm ci
 npm run package
 ```
 
-Sai em `dist/klipy-gifs_0.1.0.zip`.
+Sai em `dist/klipy-gifs_0.1.1.zip`.
 
 Depois:
 

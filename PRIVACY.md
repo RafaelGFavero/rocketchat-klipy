@@ -1,6 +1,142 @@
+# Privacy Policy
+
+Português: [ver abaixo](#privacidade)
+
+Applies to the **KLIPY GIFs for Rocket.Chat** App, version 0.1.1.
+
+This document describes exactly what the App does with data. It promises nothing that
+cannot be verified in the source code of this repository.
+
+## Summary
+
+| Question | Answer |
+|---|---|
+| Does the App have its own server? | **No.** |
+| Does the App store anything? | **No.** |
+| Does the App collect telemetry? | **No.** |
+| Does the App sell or share data? | **No.** |
+| What leaves your workspace? | The search term, sent to KLIPY to produce the results. |
+| Who makes that call? | **Your** Rocket.Chat server, directly to `api.klipy.com`. |
+
+## Architecture
+
+There is no intermediary backend. There is no server, proxy, database or service hosted
+by the App's author anywhere in the flow.
+
+The App runs entirely inside the Apps-Engine of your Rocket.Chat. When someone runs
+`/klipy`, it is **your server** that calls `https://api.klipy.com`, using the API Key that
+**your administrator** configured.
+
+The App's author has no access to your traffic, your key, your rooms or your
+conversations. There is no path through which that could happen.
+
+## Data sent to KLIPY
+
+On each search, the App sends the following to `https://api.klipy.com/v2/search`:
+
+| Data | Source | Why |
+|---|---|---|
+| Search term (`q`) | What the person typed after `/klipy` | It is the search; without it there are no results |
+| API Key (`key`) | Workspace setting | Authentication required by KLIPY |
+| Language (`locale`) | Workspace setting | To localize the results |
+| Content filter (`contentfilter`) | Workspace setting | Content safety level |
+| Number of results (`limit`) | Workspace setting | Page size |
+| Requested formats (`media_filter`) | Hard-coded | Reduces the response by more than 70% |
+
+When the choice is confirmed, the App sends to `https://api.klipy.com/v2/posts` only the
+identifier of the chosen GIF and the API Key.
+
+**Nothing else is sent.** In particular, the App does **not** send:
+
+- the user's name, email, id or any other user identifier;
+- the name or id of the room, the channel or the workspace;
+- message content;
+- the user's IP address (the call comes from the server, not from the browser);
+- the `customer_id` parameter, which KLIPY offers for user identification and which
+  this App deliberately does **not** use.
+
+KLIPY therefore receives the search term associated with the workspace's key, not with
+a person.
+
+On the client side, when the message is displayed, each person's browser or app loads
+the image from `static.klipy.com`. That request comes from the person's own device, like
+any externally hosted image, and KLIPY sees it as it would see any media load.
+
+## Data stored by the App
+
+**None.**
+
+The App does not declare the `persistence` permission in its manifest. This means
+Rocket.Chat blocks any attempt at persistent writing, even if the code contained one.
+There is no search history, no result cache, no counters and no statistics.
+
+The only information the App keeps is its **settings**, which are stored in the database
+of your own Rocket.Chat, together with the settings of the other Apps.
+
+## The API Key
+
+- It is kept in a private setting (`klipy_api_key`, type `PASSWORD`), inside your workspace.
+- It is marked as non-public: regular users cannot read it.
+- It is read into memory on each request and never copied anywhere else.
+- **It never appears in logs.** Logged URLs go through a sanitization function that
+  replaces the value of `key` with `***`.
+- **It never appears in error messages.** The messages shown to the user are fixed texts,
+  one per failure category.
+- It is never included in the exception thrown internally. When the network fails, the
+  original error message is discarded precisely because it usually repeats the URL that
+  was called.
+- It does not exist in the code, in the test fixtures or in any versioned file.
+
+This is verified by automated tests in `tests/KlipyClient.test.ts`.
+
+## Logging
+
+For each operation, the App's administrative logs record:
+
+- the operation name (`search` or `lookup`);
+- the **sanitized** URL;
+- the HTTP status;
+- the error category;
+- the duration in milliseconds.
+
+When Rocket.Chat refuses to post the GIF, the log entry has only the operation (`post`)
+and the error category: no URL, status or duration.
+
+They do **not** record: the API Key, authentication headers, the full URL, the response
+body, conversation content, user identification or the search term. The term is redacted
+from the URL before anything is written. We decided not to log it.
+
+## Third parties
+
+The only third party in the flow is **KLIPY**, which processes the search and serves the
+media. KLIPY's processing of this data is governed by KLIPY's own policies:
+
+- <https://klipy.com>
+- KLIPY's contact for data questions: developers@klipy.com
+
+By installing this App, your workspace starts sending search terms to KLIPY. If that is
+incompatible with your internal policy, do not install the App.
+
+## Retention and deletion
+
+The App retains nothing, so there is nothing to delete on its side. Uninstalling it
+removes the settings along with the App. To invalidate the key, revoke it in KLIPY's
+Partner Panel.
+
+Messages already posted remain in the rooms like any other message, under the control
+of your workspace.
+
+## Contact
+
+Privacy questions about this App: <https://github.com/RafaelGFavero/rocketchat-klipy/issues>
+
+Questions about the processing of data by the KLIPY API: developers@klipy.com
+
+---
+
 # Privacidade
 
-Referente ao App **KLIPY GIFs for Rocket.Chat**, versão 0.1.0.
+Referente ao App **KLIPY GIFs for Rocket.Chat**, versão 0.1.1.
 
 Este documento descreve exatamente o que o App faz com dados. Ele não promete nada que
 não possa ser verificado no código-fonte deste repositório.
@@ -96,6 +232,9 @@ Os logs administrativos do App registram, por operação:
 - o status HTTP;
 - a categoria do erro;
 - a duração em milissegundos.
+
+Quando o Rocket.Chat recusa a publicação do GIF, o registro tem só a operação (`post`) e
+a categoria do erro, sem URL, status ou duração.
 
 Eles **não** registram: API Key, cabeçalhos de autenticação, URL completa, corpo da
 resposta, conteúdo de conversas, identificação do usuário ou o termo pesquisado. O termo
