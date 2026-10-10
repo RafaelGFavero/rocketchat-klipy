@@ -1,17 +1,22 @@
 # Plano de testes manuais
 
-Os 199 testes automatizados cobrem cliente HTTP, normalização, validação, montagem de
-mensagem, settings, slash command e i18n — mas rodam contra fixtures. Nada aqui foi exercitado contra um servidor
-Rocket.Chat real nem contra a API real do KLIPY.
+Os 200 testes automatizados cobrem cliente HTTP, normalização, validação, montagem de
+mensagem, settings, slash command e i18n — mas rodam contra fixtures.
 
-Este roteiro é o que falta para isso. Execute-o **antes** de submeter ao Marketplace.
+Em 09/10/2026 a 0.1.1 rodou num Rocket.Chat 6.13 real, instalada com as permissões do
+manifesto e ligada à API real do KLIPY. Foram cobertos o idioma das mensagens (10.7), a
+chave ausente (6.1), a galeria, a seleção, o Enter sem escolher, a thread (4.10) e a sala
+só leitura (6.8). Resultados em [smoke-test.md](smoke-test.md). O resto deste roteiro
+ainda não foi executado.
+
+Execute-o **antes** de submeter ao Marketplace.
 
 ## Antes de começar
 
 | Precisa de | Por quê |
 |---|---|
 | Instância Rocket.Chat de desenvolvimento | Nunca teste em produção. **Não precisa ser o servidor da sua empresa** — ver [installation.md](installation.md#não-tem-acesso-a-um-servidor-rocketchat) |
-| API Key de teste do KLIPY | 100 req/h; cada `/klipy` com envio gasta 2 |
+| API Key de teste do KLIPY | 100 req/h; cada GIF enviado gasta pelo menos 2, porque a galeria busca enquanto você digita |
 | Uma segunda conta de usuário | Para conferir que as mensagens efêmeras não vazam |
 | Um usuário com idioma em inglês | Para testar i18n |
 
@@ -22,12 +27,13 @@ Registre o resultado na coluna **Status** de cada tabela: ✅ passou, ❌ falhou
 
 ## 1. Instalação e matriz de compatibilidade
 
-Este é o item mais importante do roteiro. A matriz do README está inteiramente marcada
-como "não testado" — preencha-a com o que observar.
+Este é o item mais importante do roteiro. Na matriz do README, só o 6.13 foi testado
+por completo; o 7.10 foi testado em parte, com a 0.1.0. Preencha as demais versões com
+o que observar.
 
 | # | Passo | Esperado | Status |
 |---|---|---|---|
-| 1.1 | Instalar o App (`npm run package` + upload, ou deploy pelo CLI) | Instala sem erro | |
+| 1.1 | Instalar o App com as permissões do manifesto: `npm run package` e Upload App, aceitando a tela de permissões, ou `POST /api/apps` com o campo `permissions` trazendo a lista do manifesto. Instalado por REST sem esse campo, o App recebe as permissões padrão do Apps-Engine, mais amplas que as declaradas, e defeito de permissão não aparece | Instala sem erro | |
 | 1.2 | Conferir as permissões pedidas na tela de instalação | Exatamente três: networking, slashcommand, message.write | |
 | 1.3 | Ver a versão do Apps-Engine em Administração → Apps | Anotar; comparar com a matriz do README | |
 | 1.4 | Repetir em Rocket.Chat 7.x | Instala e funciona | |
@@ -114,7 +120,7 @@ partir da documentação, sem nunca chamar a API.
 | 6.5 | Timeout | Bloquear com DROP (não REJECT) e esperar 10 s | Mesma mensagem de indisponibilidade | |
 | 6.6 | Resposta malformada | Apontar `api.klipy.com` para um servidor que devolve HTML | "O KLIPY retornou uma resposta inesperada." | |
 | 6.7 | Preview sem chave | Limpar a chave e digitar `/klipy teste` | Galeria vazia, **sem notificação a cada tecla** | |
-| 6.8 | Publicação recusada | Escolher um GIF numa sala só leitura, ou com o usuário silenciado | "Não foi possível publicar o GIF nesta sala." | |
+| 6.8 | Publicação recusada | Escolher um GIF numa sala só leitura, ou com o usuário silenciado | "Não foi possível publicar o GIF nesta sala." Na sala só leitura, o Rocket.Chat mostra também o aviso dele | |
 
 ## 7. Segurança
 
@@ -163,7 +169,7 @@ Limitações encontradas por cliente devem ir para o README, na seção de troub
 | 10.4 | Verificar o placeholder ao digitar `/klipy` | **"Search KLIPY"** — exigência do KLIPY | |
 | 10.5 | Verificar o título da galeria de preview | "Powered by KLIPY" | |
 | 10.6 | Usuário com idioma não traduzido (ex.: alemão) | Cai para inglês, sem chave crua na tela | |
-| 10.7 | Usuário sem idioma no perfil, com *Idioma da pesquisa* = `pt_BR`: `/klipy` sem termo | Ajuda em português; nenhum `PermissionDeniedError` no log do servidor | |
+| 10.7 | App instalado com as permissões do manifesto (ver 1.1). Usuário sem idioma no perfil, com *Idioma da pesquisa* = `pt_BR`: `/klipy` sem termo | Ajuda em português | |
 
 ## 11. Settings em uso
 

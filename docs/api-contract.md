@@ -233,8 +233,8 @@ utilizável para *ambos* os papéis (preview e envio) são descartados.
 - host `klipy.com` ou um subdomínio dele (`static.klipy.com`, por exemplo); qualquer outro host
   é rejeitado;
 - nenhuma barra invertida na URL. O `URL` (WHATWG) do servidor e clientes com parser RFC 3986
-  (o iOS, por exemplo) a leem de formas diferentes: em `https://klipy.com\@evil.com`, o servidor
-  vê o host `klipy.com` e esses clientes veem `evil.com`;
+  podem ler essa URL de formas diferentes: em `https://klipy.com\@evil.com`, o servidor vê o
+  host `klipy.com`, e esses clientes podem ver `evil.com`;
 - nenhum espaço, caractere de controle ASCII ou DEL em posição alguma da string, nem nas pontas.
   É precaução: a string publicada é a crua, então tem de ser exatamente a validada;
 - comprimento máximo de 2048 caracteres.
@@ -261,9 +261,9 @@ Limites publicados pelo KLIPY:
 - **Chave de teste:** até **100 requisições por hora**.
 - **Chave de produção:** sem limite, liberada mediante solicitação no Partner Panel.
 
-Cada `/klipy <termo>` consome **2 requisições** (uma no preview, uma na confirmação da seleção — §11),
-ou **1** se o usuário não selecionar nada. Com chave de teste isso dá ~50 envios completos por hora
-por workspace.
+Cada GIF enviado consome **pelo menos 2 requisições**: uma ou mais buscas do preview enquanto o
+usuário digita, e mais uma no envio (a confirmação da seleção, §11, ou a busca do `executor` quando o
+usuário confirma sem escolher). Com chave de teste isso dá menos de 50 envios por hora por workspace.
 
 ## 11. Estratégia de seleção segura
 

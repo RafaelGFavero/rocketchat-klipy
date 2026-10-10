@@ -49,8 +49,8 @@ export function isSafeHttpsUrl(value: unknown): value is string {
     }
 
     // A string publicada é esta, crua, então é ela que se testa, sem trim.
-    // Clientes com parser RFC 3986 (iOS, por exemplo) leem `\` diferente do `URL`
-    // daqui: em `https://klipy.com\@evil.com` o host deles é `evil.com`. Espaço,
+    // Clientes com parser RFC 3986 podem ler `\` diferente do `URL` daqui: em
+    // `https://klipy.com\@evil.com` o host deles pode ser `evil.com`. Espaço,
     // controle e DEL saem por precaução: o que é publicado tem de ser o validado.
     if (/[\\\s\x00-\x1f\x7f]/.test(value)) {
         return false;

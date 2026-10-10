@@ -91,7 +91,8 @@ exigido pelo Publisher Portal.
   ([com uma ressalva](#idioma-das-mensagens)).
 - Configuração por workspace: API Key, idioma da busca, filtro de conteúdo, número de
   resultados, exibição do título e do link de atribuição.
-- Funciona em canal público, canal privado, mensagem direta e dentro de threads.
+- Testado em canal público e dentro de thread. Canal privado e mensagem direta ainda não
+  foram testados.
 - Atribuição ao KLIPY sempre visível.
 
 ## Requisitos
@@ -111,7 +112,7 @@ Apps-Engine que contém tudo o que o App usa, e corresponde ao Rocket.Chat 6.13.
 
 | Rocket.Chat | Apps-Engine | Status | Observações |
 |---|---|---|---|
-| 6.13.0 | 1.46.0 | ✅ **Testado** — funciona | Piso declarado. Smoke test completo em 04/08/2026 |
+| 6.13.0 | 1.46.0 | ✅ **Testado** — funciona | Piso declarado. Smoke test da 0.1.0 em 04/08/2026; 0.1.1 testada de ponta a ponta em 09/10/2026 |
 | 7.0.x | 1.47.0 | ⚠️ Instala, não habilita | Ver *App privado* abaixo |
 | 7.5.x | 1.50.0 | ⚠️ Não testado | |
 | 7.10.0 | 1.55.0 | ⚠️ **Parcial** — instala e constrói, não habilita | Ver *App privado* abaixo |
@@ -139,8 +140,9 @@ Em Rocket.Chat 7.0+ sem plano premium, `licenses.info` traz
 | Upload do ZIP | ✅ | ✅ HTTP 200, App construído |
 | Ativação | ✅ automática | ❌ `license-prevented` |
 
-Ou seja, **o bloqueio é na ativação, não na instalação** — e não afeta o App instalado
-pelo Marketplace, que é o caminho previsto para os usuários finais.
+Ou seja, **o bloqueio é na ativação, não na instalação**. O App instalado pelo
+Marketplace, caminho previsto para os usuários finais, não deve ser afetado, porque App
+do Marketplace não é App privado. Isso não foi testado.
 
 O App usa apenas APIs padrão do Apps-Engine, sem módulos nativos ou builtins de Node,
 então deve rodar tanto no runtime Deno quanto no Node — isso ainda depende de
@@ -152,10 +154,10 @@ confirmação em runtime.
 2. Vá em **API Keys** e clique em **Add Platform**.
 3. Copie a chave gerada.
 
-A chave nasce em **modo de teste**, limitada a **100 requisições por hora**. Cada
-`/klipy termo` com envio consome 2 requisições (uma na busca, uma na confirmação do
-item escolhido), então uma chave de teste sustenta cerca de 50 envios por hora no
-workspace inteiro.
+A chave nasce em **modo de teste**, limitada a **100 requisições por hora**. Cada GIF
+enviado consome pelo menos 2 requisições: uma ou mais buscas da galeria enquanto o
+usuário digita, e mais uma no envio. Por isso uma chave de teste sustenta menos de 50
+envios por hora no workspace inteiro.
 
 Para remover o limite, solicite **acesso de produção** pelo próprio Partner Panel.
 
@@ -319,7 +321,7 @@ Resumo — o texto completo está em [PRIVACY.md](PRIVACY.md):
 | "O serviço de GIFs está temporariamente indisponível." | Timeout, falha de rede, proxy bloqueando ou erro 5xx do KLIPY | Confirme que o servidor alcança `api.klipy.com` em HTTPS/443. |
 | "O KLIPY retornou uma resposta inesperada." | Resposta fora do contrato — normalmente um proxy devolvendo HTML | Verifique se algo intercepta a saída HTTPS do servidor. |
 | "Nenhum GIF foi encontrado para …" | Sem resultados para o termo | Tente outro termo ou reduza o filtro de conteúdo. |
-| "Não foi possível publicar o GIF nesta sala." | O Rocket.Chat recusou a mensagem: sala só leitura, usuário silenciado ou sala com criptografia ponta a ponta | Publique onde o usuário pode escrever. |
+| "Não foi possível publicar o GIF nesta sala." | O Rocket.Chat recusou a mensagem: sala só leitura (caso testado, em que o Rocket.Chat mostra também o aviso dele), usuário silenciado ou sala com criptografia ponta a ponta | Publique onde o usuário pode escrever. |
 | A galeria não aparece enquanto digito | Chave ausente/errada, ou o KLIPY falhou | O preview fica em silêncio de propósito, para não notificar a cada tecla. Confirme o comando com Enter para ver a mensagem de erro. |
 | A galeria aparece, mas o GIF não carrega na mensagem | Clientes sem acesso a `static*.klipy.com` | Libere os domínios de mídia para as máquinas dos usuários, não só para o servidor. |
 
@@ -374,7 +376,7 @@ dois saírem de sincronia.
 npm test
 ```
 
-199 testes em 7 suítes, cobrindo o cliente HTTP, a normalização de mídia, a validação,
+200 testes em 7 suítes, cobrindo o cliente HTTP, a normalização de mídia, a validação,
 a montagem das mensagens, os settings, o slash command e o catálogo de i18n. Nenhum
 deles toca a rede: as fixtures em `tests/fixtures/` foram derivadas dos exemplos
 publicados na documentação do KLIPY e não contêm chave nenhuma.

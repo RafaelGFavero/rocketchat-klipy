@@ -1,9 +1,39 @@
 # Smoke test — 15 minutos
 
+## Execução de 09/10/2026 — 0.1.1
+
+Ambiente: Rocket.Chat 6.13 em Docker + WSL, API real do KLIPY.
+
+**Como instalar para testar:** pela tela Administração → Apps → Upload App, aceitando a
+tela de permissões, ou por `POST /api/apps` com o campo de formulário `permissions`
+trazendo a lista do manifesto. Sem esse campo, o Rocket.Chat instala com as permissões
+padrão do Apps-Engine, e um defeito de permissão não aparece.
+
+| # | Passo | Resultado |
+|---|---|---|
+| 1 | 0.1.0 instalada com as permissões do manifesto; usuário sem idioma no perfil, `Language` do workspace em `pt-BR`: `/klipy` sem termo | ❌ ajuda em inglês. No mesmo servidor, com o mesmo usuário, a 0.1.0 instalada sem `permissionsGranted` respondeu em português |
+| 2 | Atualização da 0.1.0 para a 0.1.1, com as permissões do manifesto | ✅ |
+| 3 | *Idioma da pesquisa* = `en_US`: `/klipy` sem termo | ✅ ajuda em inglês |
+| 4 | *Idioma da pesquisa* = `pt_BR`: `/klipy` sem termo | ✅ ajuda em português |
+| 5 | Sem API Key: `/klipy` com termo | ✅ "O App KLIPY ainda não foi configurado…", em português |
+| 6 | Galeria de `/klipy festa` | ✅ 10 itens, todas as miniaturas em `static.klipy.com`; título da galeria pela chave `klipy_preview_title` |
+| 7 | Selecionar o 3º item | ✅ uma mensagem, com anexo cuja imagem está em `static.klipy.com`, com "Powered by KLIPY", sem o termo pesquisado e sem aviso de erro |
+| 8 | Enter sem escolher | ✅ publicou um GIF |
+| 9 | Comando dentro de uma thread | ✅ GIF publicado na thread |
+| 10 | Canal só leitura, membro que não é admin | ✅ nada publicado. Dois avisos: o do Rocket.Chat (*"You can't send messages because the room is readonly."*) e o do App (*"Não foi possível publicar o GIF nesta sala."*). Nenhum fala em "indisponível" |
+
+Os passos 6 a 10 somaram 13 verificações, todas aprovadas.
+
+**Não testado:** usuário silenciado, sala com criptografia ponta a ponta, canal privado,
+mensagem direta, a 0.1.1 em outras versões do Rocket.Chat e o comportamento do
+`rc-apps deploy`.
+
 > ## ✅ Executado em 04/08/2026 — Rocket.Chat 6.13.0
 >
-> Ambiente: Docker + WSL2 (Ubuntu 26.04), MongoDB 6.0 em replica set, App instalado
-> via API REST, chave de teste do KLIPY.
+> Ambiente: Docker + WSL2 (Ubuntu 26.04), MongoDB 6.0 em replica set, chave de teste do
+> KLIPY. App instalado via API REST **sem** `permissionsGranted`: nesse caso o
+> Rocket.Chat aplica as permissões padrão do Apps-Engine, mais amplas que as três do
+> manifesto. Foi com essas permissões que o App rodou nos passos abaixo.
 >
 > | # | Passo | Resultado |
 > |---|---|---|
@@ -22,8 +52,12 @@
 > **Um bug encontrado e corrigido:** as mensagens do App saíam em inglês numa interface
 > em português. Detalhes em [CHANGELOG.md](../CHANGELOG.md) e na seção *Idioma das
 > mensagens* do [README](../README.md#idioma-das-mensagens).
-> Em 09/10/2026 a revisão de código mostrou que essa correção não funcionava fora do mock
-> (faltava `server-setting.read`). Refeita na 0.1.1 sem permissão nova — ver CHANGELOG.
+> Essa correção lia o setting `Language` do servidor, leitura que exige
+> `server-setting.read`, e o manifesto não declara essa permissão. Instalada com as
+> permissões do manifesto, a 0.1.0 respondeu em inglês. Aqui ela pareceu funcionar
+> porque a instalação sem `permissionsGranted` deu ao App as permissões padrão, que
+> incluem `server-setting.read`. Refeita na 0.1.1 sem permissão nova: ver a execução de
+> 09/10/2026 acima e o CHANGELOG.
 >
 > **Screenshots:** as cinco da submissão foram capturadas na mesma sessão e estão em
 > `docs/screenshots/`.

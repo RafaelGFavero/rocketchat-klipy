@@ -27,8 +27,8 @@ The app is free and open source (MIT). The KLIPY API key is also free; see
 
 | Rocket.Chat | Status |
 |---|---|
-| 6.13 | Tested end to end: install, settings, search, gallery, posting, threads, update |
-| 7.10 | The package installs and the app starts without errors. Activation was not tested, because Community editions block uploading private apps since 7.0. Installing from the Marketplace is not affected |
+| 6.13 | Tested end to end with 0.1.1 on 9 October 2026: install with the declared permissions, settings, search, gallery, posting, threads, read-only room, update from 0.1.0 |
+| 7.10 | Tested with 0.1.0 on 4 August 2026: the package installs and the app starts without errors. Activating it as an uploaded private app was refused (`license-prevented`), because Community editions block private apps since 7.0. Searching and posting were not tested on 7.x. Installing from the Marketplace should not be affected, since Marketplace apps are not private apps |
 | Earlier than 6.13 | Not supported (the app needs Apps-Engine 1.46 or later) |
 
 ## Who can use it
@@ -45,10 +45,10 @@ Each workspace uses its own key. The app does not ship one.
 2. Open **API Keys** and click **Add Platform**.
 3. Copy the key.
 
-New keys start in test mode, limited to 100 requests per hour. Every GIF sent costs two
-requests (the search, then a check of the chosen item), so a test key covers about 50
-GIFs per hour for the whole workspace. Request production access in the Partner Panel
-when you need more.
+New keys start in test mode, limited to 100 requests per hour. Every GIF sent costs at
+least two requests: one or more gallery searches while the user types, plus one when it
+is posted. A test key therefore covers fewer than 50 GIFs per hour for the whole
+workspace. Request production access in the Partner Panel when you need more.
 
 ## Installation
 
@@ -111,7 +111,7 @@ To stop using the key as well, revoke it in the KLIPY Partner Panel.
 | "The temporary KLIPY request limit was reached." | Test key used up its 100 requests per hour | Wait for the next hour or request production access |
 | "The GIF service is temporarily unavailable." | Timeout, blocked network, or a KLIPY server error | Check that the server reaches `api.klipy.com` on port 443 |
 | "KLIPY returned an unexpected response." | Something, usually a proxy, answered in KLIPY's place | Check what intercepts the server's outbound HTTPS |
-| "The GIF could not be posted in this room." | Rocket.Chat refused the message: read-only room, muted user, or an end-to-end encrypted room | Post somewhere the user can write |
+| "The GIF could not be posted in this room." | Rocket.Chat refused the message: read-only room (the tested case, where Rocket.Chat also shows its own notice), muted user, or an end-to-end encrypted room | Post somewhere the user can write |
 | No gallery while typing | Missing or wrong key, or KLIPY failed | Press Enter to see the error. The gallery stays silent on errors so it doesn't notify on every keystroke |
 | The gallery works but the posted GIF doesn't load | Users' devices can't reach `static*.klipy.com` | Allow the media domains for client machines, not only the server |
 

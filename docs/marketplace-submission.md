@@ -11,8 +11,8 @@ Não abra a submissão antes de fechar todos estes.
 
 | # | Item | Status |
 |---|---|---|
-| 0.1 | Executar [docs/smoke-test.md](smoke-test.md) | ✅ Feito em 04/08/2026 — 10/10 passos no Rocket.Chat 6.13, um bug corrigido |
-| 0.1b | [manual-test-plan.md](manual-test-plan.md) completo | ⚪ Opcional para a 0.1.0; recomendado antes de divulgar |
+| 0.1 | Executar [docs/smoke-test.md](smoke-test.md) | ✅ 0.1.1 em 09/10/2026, no Rocket.Chat 6.13, instalada com as permissões do manifesto: idioma, chave ausente e 13/13 verificações contra a API real. A execução de 04/08/2026 (0.1.0, 10/10 passos) instalou sem `permissionsGranted`, por isso a correção de idioma feita ali pareceu funcionar; com as permissões do manifesto, ela falhava |
+| 0.1b | [manual-test-plan.md](manual-test-plan.md) completo | ⚪ Opcional para a 0.1.1; 10.7 e 6.8 cobertos pela execução de 09/10/2026. Recomendado antes de divulgar |
 | 0.2 | Confirmar o contrato da API contra a API real do KLIPY | ✅ Feito em 04/08/2026 — `/v2/search` 100%, um bug em `/v2/posts` corrigido |
 | 0.3 | Preencher a matriz de compatibilidade do README com resultados observados | ✅ Feito — 6.13 testado, 7.10 parcial, ambos documentados |
 | 0.4 | Produzir as cinco screenshots | ✅ Feito — `docs/screenshots/`, **960×540 (16:9)**, chave mascarada |
@@ -21,11 +21,11 @@ Não abra a submissão antes de fechar todos estes.
 | 0.7 | URLs públicas (suporte, termos, privacidade) | ✅ Feito — repositório público, as três respondem HTTP 200 |
 | 0.8 | Criar conta no **Publisher Portal** | ✅ Feito em 04/08/2026 — é conta separada da Rocket.Chat Cloud |
 | 0.9 | Obter API Key do KLIPY | ✅ Feito — plataforma `Rocket.Chat GIF Integration`, chave `RocketChat-Server` |
-| 0.10 | `npm run verify` verde | ✅ Feito |
-| 0.11 | `npm run package` e `npm run package:source` gerando ZIP | ✅ Feito |
+| 0.10 | `npm run verify` verde | ✅ 0.1.1: verde, 200 testes |
+| 0.11 | `npm run package` e `npm run package:source` gerando ZIP | ✅ 0.1.1: `klipy-gifs_0.1.1.zip` e `klipy-gifs_0.1.1_source.zip` |
 | 0.12 | Nenhuma credencial no repositório | ✅ Verificado |
-| 0.13 | Build do Marketplace compilando | ✅ 04/08/2026 — status `Compiled`, TS 5.9.3, Engine 1.46.0, 15,2s (5ª tentativa) |
-| 0.14 | **Short Description** e **Categories** na listagem | 🔴 **em branco no portal** — ver §2.2 |
+| 0.13 | Build do Marketplace compilando | 🟡 0.1.1: o pacote de código-fonte compila localmente sem erro, com a mesma fusão de opções do compilador do Marketplace, em TypeScript 4.9.5 (o pin do pacote) e 5.9.3 (a versão que o build da 0.1.0 reportou). O build do Marketplace só roda depois do upload. A 0.1.0 compilou lá em 04/08/2026: `Compiled`, TS 5.9.3, Engine 1.46.0, 5ª tentativa |
+| 0.14 | **Short Description** e **Categories** na listagem | 🔴 Pendente: preencher no formulário Upload Update. A página do App no portal ainda mostra os dois vazios. Textos na §2.1, situação na §2.2 |
 | 0.15 | Submeter a versão para revisão | 🟡 0.1.0 parada em `compiled` de 04/08 a 09/10/2026 sem resposta — ver §9 |
 
 ---
@@ -37,7 +37,7 @@ São **duas contas diferentes**, e ter a primeira não cria a segunda:
 | Conta | Onde | Situação |
 |---|---|---|
 | Rocket.Chat Cloud | <https://cloud.rocket.chat> | ✅ criada |
-| **Marketplace Publisher** | <https://marketplace.rocket.chat/publisher/register> | 🔴 a criar |
+| **Marketplace Publisher** | <https://marketplace.rocket.chat/publisher/register> | ✅ criada em 04/08/2026 |
 | open.rocket.chat | <https://open.rocket.chat> | 🔴 verificar — o cadastro de publisher exige o username |
 
 ### Formulário "Publisher Sign Up" — campo a campo
@@ -92,14 +92,15 @@ Uma listagem sem descrição curta e sem categoria é praticamente invisível na
 Marketplace — a descrição curta é o que aparece no card de resultado. Preencher antes de
 submeter para revisão.
 
-Use os textos da §6. A Long Description vale substituir pela versão longa: o que está lá
-hoje veio do campo `description` do manifesto, que é uma linha só.
+Use os textos em inglês da §2.1. A Long Description vale substituir pela versão longa: o
+que está lá hoje veio do campo `description` do manifesto, que é uma linha só.
 
-### 2.1 As URLs públicas — decisão
+### 2.1 URLs públicas e textos da listagem
 
-O App precisa de **três** endereços públicos: suporte, termos e privacidade. Publicar o
-repositório no GitHub resolve os três de uma vez, sem hospedagem adicional e sem manter
-conteúdo duplicado — os arquivos já existem e são versionados junto com o código.
+O App precisa de **quatro** endereços públicos: suporte, termos, privacidade e
+documentação. Publicar o repositório no GitHub resolve os quatro de uma vez, sem
+hospedagem adicional e sem manter conteúdo duplicado — os arquivos já existem e são
+versionados junto com o código.
 
 | Finalidade | URL definitiva |
 |---|---|
@@ -122,11 +123,55 @@ manter duas cópias em sincronia — por isso não é a recomendação.
 Uma vantagem prática do GitHub: as issues já dão um canal de suporte rastreável, com
 histórico público, sem você montar formulário nem caixa de e-mail dedicada.
 
-### Descrição curta
+#### Textos em inglês, usados no portal
+
+Short Description:
+
+```
+Search and share GIFs from KLIPY
+```
+
+Long Description:
+
+```
+KLIPY GIFs adds the /klipy command to your Rocket.Chat. Type a term, browse a gallery of results, and send the GIF you picked to the conversation without leaving the room.
+
+HOW IT WORKS
+Type /klipy congratulations. Rocket.Chat shows a gallery of thumbnails from KLIPY. Pick one and only that GIF is posted. Your search term and the other results are never posted to the room.
+
+CONFIGURATION
+Each workspace uses its own KLIPY API key, obtained free of charge in the KLIPY Partner Panel. The administrator also sets the search language, the content safety filter and how many results to show. The search language is also the language of the app's messages for users who have not chosen one in their profile.
+
+LANGUAGES
+English and Portuguese.
+
+Third-party Rocket.Chat integration powered by the KLIPY API. Not produced or endorsed by KLIPY or Rocket.Chat.
+```
+
+Setup instructions:
+
+```
+1. Get a free API key in the KLIPY Partner Panel (partner.klipy.com/api-keys > API Keys > Add Platform).
+2. In Rocket.Chat, open Administration > Apps > KLIPY GIFs > Settings.
+3. Paste the key into "KLIPY API Key" and save.
+4. Portuguese-speaking workspaces: set "Search language" to pt_BR.
+5. In any room, type /klipy congratulations.
+
+New keys start in test mode, limited to 100 requests per hour. Request production access in the KLIPY Partner Panel when you finish testing.
+
+Allow outbound HTTPS from the server to api.klipy.com, and from users' devices to static.klipy.com, static1.klipy.com and static2.klipy.com.
+```
+
+#### Rascunhos em português (referência)
+
+Cada texto usa o rótulo do setting no próprio idioma: "API Key do KLIPY" aqui, "KLIPY API
+Key" na versão em inglês.
+
+**Descrição curta**
 
 > Pesquise e compartilhe GIFs do KLIPY direto na conversa, com `/klipy`.
 
-### Descrição completa
+**Descrição completa**
 
 > KLIPY GIFs adiciona o comando `/klipy` ao seu Rocket.Chat. Digite um termo, veja uma
 > galeria de resultados e envie o GIF escolhido para a conversa — sem sair da sala.
@@ -152,7 +197,7 @@ histórico público, sem você montar formulário nem caixa de e-mail dedicada.
 > Integração de terceiros, não oficial, movida pela API do KLIPY. Não é produzida nem
 > endossada pelo KLIPY ou pelo Rocket.Chat.
 
-### Instruções de configuração
+**Instruções de configuração**
 
 > 1. Obtenha uma API Key gratuita no Partner Panel do KLIPY
 >    (partner.klipy.com/api-keys → API Keys → Add Platform).
@@ -194,7 +239,8 @@ Os dois scripts empacotam a partir de uma cópia limpa. Confira antes de enviar:
 - [ ] o ZIP não contém testes, docs ou scripts;
 - [ ] o ZIP não contém API Key;
 - [ ] `app.json` traz o UUID, a versão e as três permissões corretas;
-- [ ] o `package.json` de dentro do ZIP tem **5 devDependencies**, não as 11 do projeto.
+- [ ] o `package.json` de dentro do ZIP tem **4 devDependencies**, não as 12 do projeto
+      (`npm run package` imprime as duas contagens).
 
 ### ⚠️ O package.json do pacote não é o do projeto
 
@@ -374,7 +420,7 @@ antes de confirmar.
 
 ---
 
-## 4. Ponto a confirmar com o KLIPY 🟡
+## 4. Ponto confirmado com o KLIPY ✅
 
 Os *Integration Requirements* do KLIPY pedem que as requisições partam do app ou
 navegador do usuário final, e não sejam roteadas por servidores intermediários operados
@@ -434,24 +480,15 @@ no campo de descrição da integração (limitado a 500 caracteres):
 > of ours. Media loads direct from static.klipy.com. Please confirm this is OK.
 
 A chave de teste foi emitida após esse cadastro, o que é um indício favorável — mas
-**não** é confirmação explícita. O aceite formal deve vir por escrito.
+**não** é confirmação explícita. O aceite por escrito veio depois, no ticket CSM-117.
 
-### Ação restante
+### Histórico: o e-mail
 
-**O e-mail está escrito e pronto em [docs/email-klipy.md](email-klipy.md)** — basta
-enviar para `developers@klipy.com`. Ele retoma o que foi declarado no cadastro e faz três
-perguntas objetivas:
-
-1. o padrão de chamada server-side atende aos *Integration Requirements*;
-2. a atribuição implementada atende às diretrizes;
-3. há restrição ao uso de "KLIPY" no nome do App publicado.
-
-A terceira ganhou peso depois que o Partner Panel **recusou** "KLIPY" no nome da chave de
-API (*"Avoid 'KLIPY', 'test', and similar keywords in the API key name"*). A regra é sobre
-o nome da chave, não do App — mas revela que existe política de marca, e é melhor
-perguntar antes de publicar do que renomear depois.
-
-Registre aqui a data de envio e a resposta.
+O e-mail de [docs/email-klipy.md](email-klipy.md) foi enviado e respondido no ticket
+CSM-117, com a aprovação de 05/08/2026 citada acima. Ele perguntava se a chamada
+server-side atende aos *Integration Requirements*, se a atribuição atende às diretrizes e
+se havia restrição ao uso de "KLIPY" no nome do App. A terceira pergunta existiu porque o
+Partner Panel recusou "KLIPY" no nome da chave de API.
 
 ### Cadastro no Partner Panel
 
@@ -511,7 +548,7 @@ submetida com o texto de primeira versão ("Primeira versão. Comando `/klipy`�
 ```
 Fixes:
 - Help and error messages now follow the app's Search language for users who have not chosen a language in their profile. The default search language is now en_US.
-- When Rocket.Chat refuses a post (read-only room, muted user, encrypted room), the app now says so instead of reporting the GIF service as unavailable.
+- When Rocket.Chat refuses a post, the app now says the GIF could not be posted instead of reporting the GIF service as unavailable. Tested in a read-only room, where Rocket.Chat also shows its own notice. A muted user or an end-to-end encrypted room may also refuse the post; those cases were not tested.
 - Posted messages only accept media from klipy.com.
 ```
 
@@ -529,7 +566,7 @@ Changes since 0.1.0:
 
 Build notes, unchanged from 0.1.0: the package carries its own tsconfig.json (types: [], skipLibCheck: true) and pins typescript 4.9.5 and @types/node 18.11.19 so it compiles on the Marketplace build.
 
-Tested: 199 unit tests; end to end on Rocket.Chat 6.13 (install, settings, search, preview, post).
+Tested on Rocket.Chat 6.13, installed with the manifest's permissions: language fallback, preview (10 items, all on static.klipy.com), selecting an item, posting with Enter, posting inside a thread, and a read-only room. 200 unit tests.
 ```
 
 ---
@@ -576,10 +613,11 @@ Dois pontos da documentação que mudam o que fazer:
 A API pública do Marketplace devolve o status de qualquer versão, sem login:
 
 ```powershell
-(Invoke-RestMethod "https://marketplace.rocket.chat/v1/apps/88c860bf-0794-4052-8625-c7b2f20ff0eb?appVersion=0.1.0").status
+(Invoke-RestMethod "https://marketplace.rocket.chat/v1/apps/88c860bf-0794-4052-8625-c7b2f20ff0eb?appVersion=0.1.1").status
 ```
 
-`compiled` significa na fila. Os Apps do catálogo aparecem como `published`.
+`compiled` significa na fila. Os Apps do catálogo aparecem como `published`. O
+diagnóstico da 0.1.0, abaixo, usou o mesmo comando com `appVersion=0.1.0`.
 
 ### O que aconteceu com a 0.1.0
 
@@ -595,7 +633,8 @@ indica para dúvidas sobre a revisão.
 
 ## 8. Depois da publicação
 
-- [ ] Marcar a tag `v0.1.0` no repositório.
+- [ ] Marcar as tags no repositório: `v0.1.0` no commit submetido em 04/08/2026 e `v0.1.1`
+      no commit de merge da 0.1.1. Os links do CHANGELOG dependem das duas.
 - [ ] Atualizar o README com o link do Marketplace e trocar "ainda não publicado".
 - [ ] Acompanhar issues de instalação nas primeiras semanas.
 - [ ] Confirmar que a chave de produção do KLIPY foi liberada antes que os workspaces

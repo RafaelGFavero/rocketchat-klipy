@@ -7,25 +7,31 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ### Corrigido
 
-- **A correção de idioma da 0.1.0 nunca funcionou num servidor real.** Ela lia o setting
-  `Language` do servidor, e essa leitura exige a permissão `server-setting.read`, que o
-  App não declara. O Rocket.Chat recusava a chamada e as mensagens voltavam ao inglês.
-  Os testes não pegaram porque o mock devolvia o valor sem checar permissão. Agora, para
-  quem não escolheu idioma no perfil, as mensagens seguem o setting *Idioma da pesquisa*
-  do próprio App, sem permissão nova. O padrão desse setting passou de `pt_BR` para
-  `en_US`, que também é o valor usado quando o configurado é inválido. Em workspace de
-  língua portuguesa, defina-o como `pt_BR`.
+- **A correção de idioma da 0.1.0 falhava quando o App era instalado com as permissões
+  que declara.** Ela lia o setting `Language` do servidor, e essa leitura exige a
+  permissão `server-setting.read`, que o App não declara. Instalada com as três
+  permissões do manifesto, que é como o Marketplace e a tela Upload App instalam, a 0.1.0
+  respondeu em inglês a um usuário sem idioma no perfil, num workspace com `Language` em
+  `pt-BR`. O smoke test de 04/08/2026 não pegou o defeito porque instalou o App pela API
+  REST sem `permissionsGranted`; nesse caso o Rocket.Chat aplica as permissões padrão do
+  Apps-Engine, que incluem `server-setting.read`. O mock dos testes também devolvia o
+  valor sem checar permissão. Agora, para quem não escolheu idioma no perfil, as
+  mensagens seguem o setting *Idioma da pesquisa* do próprio App, sem permissão nova. O
+  padrão desse setting passou de `pt_BR` para `en_US`, que também é o valor usado quando
+  o configurado é inválido. Em workspace de língua portuguesa, defina-o como `pt_BR`.
 - **Falha ao publicar não culpa mais o serviço de GIFs.** Quando o Rocket.Chat recusa a
   mensagem (sala só leitura, usuário silenciado, sala com criptografia ponta a ponta), o
   usuário via "O serviço de GIFs está temporariamente indisponível.". Agora vê "Não foi
   possível publicar o GIF nesta sala.", e o log registra a operação `post` sem detalhe
-  da sala.
+  da sala. O único caso testado foi a sala só leitura, em que o Rocket.Chat mostra
+  também o aviso dele. Usuário silenciado e sala com criptografia ponta a ponta não foram
+  testados.
 - **Só URL do domínio `klipy.com` chega à mensagem.** `isSafeHttpsUrl()` aceitava
   qualquer host HTTPS. Agora exige `klipy.com` ou um subdomínio, tanto nas URLs de mídia
   quanto no link do título. Também recusa URL com barra invertida, porque clientes com
-  parser RFC 3986 (o iOS, por exemplo) leem `https://klipy.com\@evil.com` com host
-  `evil.com`. Espaço, caractere de controle e DEL, em qualquer posição da string, são
-  recusados por precaução: a string publicada tem de ser exatamente a validada.
+  parser RFC 3986 podem ler `https://klipy.com\@evil.com` com host `evil.com`. Espaço,
+  caractere de controle e DEL, em qualquer posição da string, são recusados por
+  precaução: a string publicada tem de ser exatamente a validada.
 
 ### Removido
 
