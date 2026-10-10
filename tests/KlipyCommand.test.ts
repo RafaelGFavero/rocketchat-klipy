@@ -1,4 +1,4 @@
-import type { IHttp, IHttpResponse, IModify, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import type { IHttp, IHttpResponse, ILogger, IModify, IRead } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IMessage, IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
@@ -380,6 +380,24 @@ describe('executor', () => {
         expect(posted).toHaveLength(0);
         expect(notified).toHaveLength(1);
         expect(notified[0].message.text).toBe(STRINGS.pt.klipy_error_post_failed);
+    });
+
+    it('registra a recusa só com a operação e a categoria do erro', async () => {
+        // PRIVACY.md promete isso: a exceção do Rocket.Chat pode trazer detalhe da sala.
+        const logger = {
+            debug: jest.fn(),
+            info: jest.fn(),
+            log: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+        } as unknown as ILogger;
+        const { http } = makeHttp(() => respondWith(200, searchSuccess));
+        const { modify } = makeModify({ failFinish: true });
+
+        await new KlipyCommand(logger).executor(makeContext(['festa']), makeRead(), modify, http, persis);
+
+        expect(logger.warn).toHaveBeenCalledTimes(1);
+        expect(logger.warn).toHaveBeenCalledWith({ app: 'klipy', operation: 'post', error: 'postFailed' });
     });
 });
 
