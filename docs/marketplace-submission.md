@@ -24,9 +24,9 @@ Não abra a submissão antes de fechar todos estes.
 | 0.10 | `npm run verify` verde | ✅ 0.1.1: verde, 200 testes |
 | 0.11 | `npm run package` e `npm run package:source` gerando ZIP | ✅ 0.1.1: `klipy-gifs_0.1.1.zip` e `klipy-gifs_0.1.1_source.zip` |
 | 0.12 | Nenhuma credencial no repositório | ✅ Verificado |
-| 0.13 | Build do Marketplace compilando | 🟡 0.1.1: o pacote de código-fonte compila localmente sem erro, com a mesma fusão de opções do compilador do Marketplace, em TypeScript 4.9.5 (o pin do pacote) e 5.9.3 (a versão que o build da 0.1.0 reportou). O build do Marketplace só roda depois do upload. A 0.1.0 compilou lá em 04/08/2026: `Compiled`, TS 5.9.3, Engine 1.46.0, 5ª tentativa |
-| 0.14 | **Short Description** e **Categories** na listagem | 🔴 Pendente: preencher no formulário Upload Update. A página do App no portal ainda mostra os dois vazios. Textos na §2.1, situação na §2.2 |
-| 0.15 | Submeter a versão para revisão | 🟡 0.1.0 parada em `compiled` de 04/08 a 09/10/2026 sem resposta — ver §9 |
+| 0.13 | Build do Marketplace compilando | ✅ 0.1.1 em 13/10/2026: `Compiled`, TS 4.9.5, Engine 1.46.0, 22,2s, na primeira tentativa. A 0.1.0 compilou em 04/08/2026, na 5ª tentativa |
+| 0.14 | **Short Description** e **Categories** na listagem | ✅ Preenchidos na 0.1.1 em 13/10/2026 (Social & Fun; en e pt-br; textos da §2.1). A página do App no portal ainda mostra os campos do App vazios; os da versão estão preenchidos |
+| 0.15 | Submeter a versão para revisão | 🟡 0.1.1 submetida em 13/10/2026 com **Submit for Review**; status `compiled`, aguardando revisão. A 0.1.0 ficou em `compiled` de 04/08 a 13/10/2026 sem resposta — ver §9 |
 
 ---
 
@@ -626,10 +626,25 @@ aprovação nem de reprovação. No mesmo período, Apps de outros publicadores 
 40 dias (TeamsMeetings, CCNet Claw, Rocket.Poker, WhatsApp Serpro). Não dá para saber
 pelo lado de fora se a versão chegou a entrar na fila ou se ficou esquecida nela.
 
-Plano: submeter a 0.1.1 pelo fluxo de upload de versão, clicando **Submit for Review**
-no fim, e escrever para **marketplace@rocket.chat**, o contato que
-a [página de diretrizes](https://developer.rocket.chat/apps-engine/app-submission-to-the-marketplace/written-content)
-indica para dúvidas sobre a revisão.
+A 0.1.1 foi submetida em 13/10/2026 pelo fluxo de upload de versão, terminando em
+**Submit for Review**. Logo depois ela também ficou em `compiled`: esse é o status de quem
+está na fila de revisão, então a 0.1.0 provavelmente também chegou à fila e só não foi
+revisada. Se não houver resposta, escrever para **support@rocket.chat** com cópia para
+**marketplace@rocket.chat**, os contatos que o próprio portal indica na etapa de
+submissão.
+
+### Portal girando sem parar: cache do navegador
+
+Entre 10 e 13/10/2026 a página do App e a tela de Upload Update ficaram girando para
+sempre no Chrome do dia a dia, enquanto numa aba anônima abriam normalmente. Num momento
+de instabilidade, o servidor respondeu às rotas `/v1/publisher/apps/<id>` com a página
+HTML do site, e o Chrome guardou essa resposta no cache HTTP. Daí em diante a interface
+lia o HTML do cache, falhava ao interpretar como JSON e não saía do carregamento. O
+console mostra `Unexpected token '<', "<!doctype "... is not valid JSON`.
+
+Resolve: abrir em aba anônima, ou recarregar ignorando o cache (Ctrl+Shift+R com o
+DevTools aberto e "Disable cache" marcado), ou limpar os dados de
+`marketplace.rocket.chat`.
 
 ## 8. Depois da publicação
 
